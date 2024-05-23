@@ -54,8 +54,13 @@ void cmds::init() {
 }
 
 int cmds::execute(utils::Args args) {
-    int result = mainTask.execute(args);
+    int result = HELP;
+    try {
+        result = mainTask.execute(args);
+    } catch (exception& e) {}
+
     if (result == HELP) show_help(args);
+    
     return result;
 }
 

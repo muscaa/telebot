@@ -7,14 +7,18 @@ namespace utils {
 class Args {
 private:
     vector<string> argsArray;
-    int current;
+    int currentIndex;
 
 public:
     Args(vector<string> argsArray);
 
+    string operator[](int index);
+
     int size();
 
-    string operator[](int index);
+    int remaining();
+
+    int current();
 
     bool hasNext();
 

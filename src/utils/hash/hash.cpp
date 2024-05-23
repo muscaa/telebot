@@ -9,6 +9,10 @@ utils::HASH::HASH(int length) : length(length) {
     data = new byte[length];
 }
 
+utils::HASH::HASH(string hex) : HASH(hex.length() / 2) {
+    hex_bytes(data, hex);
+}
+
 utils::HASH::HASH() : HASH(0) {}
 
 utils::HASH::~HASH() {
@@ -36,7 +40,7 @@ utils::HASH utils::HASH::random(int length) {
 }
 
 string utils::hex_string(byte* buf, int len) {
-    string result;
+    string result = "";
     for (int i = 0; i < len; i++) {
         byte v = buf[i] & 0xFF;
 

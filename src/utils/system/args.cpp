@@ -1,21 +1,29 @@
 #include "args.h"
 
-utils::Args::Args(vector<string> argsArray) : argsArray(argsArray), current(0) {}
-
-int utils::Args::size() {
-    return argsArray.size();
-}
+utils::Args::Args(vector<string> argsArray) : argsArray(argsArray), currentIndex(0) {}
 
 string utils::Args::operator[](int index) {
     return argsArray[index];
 }
 
+int utils::Args::size() {
+    return argsArray.size();
+}
+
+int utils::Args::remaining() {
+    return size() - currentIndex;
+}
+
+int utils::Args::current() {
+    return currentIndex;
+}
+
 bool utils::Args::hasNext() {
-    return current < size();
+    return currentIndex < size();
 }
 
 string utils::Args::String() {
-    return argsArray[current++];
+    return argsArray[currentIndex++];
 }
 
 int utils::Args::Int() {

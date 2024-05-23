@@ -13,6 +13,8 @@ private:
 public:
     HASH(int length);
 
+    HASH(string hex);
+
     HASH();
 
     ~HASH();

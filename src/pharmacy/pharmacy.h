@@ -22,20 +22,22 @@ public:
     string getLocation() { return location; }
 
     int getQuantity() { return quantity; }
+
+    int getAvailableQuantity();
 };
 
 class Reservation {
 private:
-    utils::HASH uid;
+    string uid;
     shared_ptr<Product> product;
     int quantity;
     string name;
 
 public:
-    Reservation(utils::HASH uid, shared_ptr<Product> product, int quantity, string name)
+    Reservation(string uid, shared_ptr<Product> product, int quantity, string name)
         : uid(uid), product(product), quantity(quantity), name(name) {}
 
-    utils::HASH getUID() { return uid; }
+    string getUID() { return uid; }
 
     shared_ptr<Product>& getProduct() { return product; }
 
@@ -44,14 +46,23 @@ public:
     string getName() { return name; }
 };
 
+extern vector<shared_ptr<pharmacy::Product>> products;
+extern map<string, unique_ptr<pharmacy::Reservation>> reservations;
+
 void init();
 
 bool add_product(string id, string type, string location, int quantity);
 
 bool remove_product(string id);
 
+int find_product(string id);
+
+bool product_exists(string id);
+
 bool add_reservation(string product, int quantity, string name);
 
-bool remove_reservation(utils::HASH uid);
+bool remove_reservation(string uid);
+
+bool reservation_exists(string uid);
 
 }
