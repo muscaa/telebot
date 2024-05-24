@@ -1,12 +1,14 @@
 #include "command.h"
 
 #include "products/show.h"
+#include "products/find.h"
 #include "products/add.h"
-#include "products/delete.h"
-#include "products/reserve.h"
+#include "products/remove.h"
 
 #include "reservations/show.h"
-#include "reservations/cancel.h"
+#include "reservations/find.h"
+#include "reservations/add.h"
+#include "reservations/remove.h"
 
 #define HELP_SPACES "  "
 
@@ -40,16 +42,18 @@ void cmds::Task::add(Task* task) {
 }
 
 void cmds::init() {
-    auto products = new cmds::Task("Products", { "products" }, "Products task.");
+    auto products = new cmds::Task("Products", { "products", "P" }, "Products system manipulation task.");
     products->add(new cmds::products::Show());
+    products->add(new cmds::products::Find());
     products->add(new cmds::products::Add());
-    products->add(new cmds::products::Delete());
-    products->add(new cmds::products::Reserve());
+    products->add(new cmds::products::Remove());
     mainTask.add(products);
 
-    auto reservations = new cmds::Task("Reservations", { "reservations" }, "Reservations task.");
+    auto reservations = new cmds::Task("Reservations", { "reservations", "R" }, "Reservations system manipulation task.");
     reservations->add(new cmds::reservations::Show());
-    reservations->add(new cmds::reservations::Cancel());
+    reservations->add(new cmds::reservations::Find());
+    reservations->add(new cmds::reservations::Add());
+    reservations->add(new cmds::reservations::Remove());
     mainTask.add(reservations);
 }
 
@@ -95,7 +99,7 @@ static void task_help(cmds::Task* task, string spaces) {
     }
 }
 
-static bool show_some_help(utils::Args args, int index, cmds::Task* task) {
+static bool simple_help(utils::Args args, int index, cmds::Task* task) {
     if (index >= args.size()) return false;
     string name = args[index];
 
@@ -111,7 +115,7 @@ static bool show_some_help(utils::Args args, int index, cmds::Task* task) {
     for (unique_ptr<cmds::Task>& task : task->tasks) {
         for (string alias : task->getAlias()) {
             if (alias == name) {
-                if (show_some_help(args, index + 1, task.get())) return true;
+                if (simple_help(args, index + 1, task.get())) return true;
 
                 command_help(task.get(), HELP_SPACES);
                 task_help(task.get(), HELP_SPACES HELP_SPACES);
@@ -125,7 +129,7 @@ static bool show_some_help(utils::Args args, int index, cmds::Task* task) {
 
 void cmds::show_help(utils::Args args) {
     cout << "Help:" << endl;
-    if (!show_some_help(args, 0, &mainTask)) {
+    if (!simple_help(args, 0, &mainTask)) {
         task_help(&mainTask, HELP_SPACES);
     }
 }

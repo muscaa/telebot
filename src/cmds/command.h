@@ -29,27 +29,6 @@ public:
     string getUsage() const { return usage; }
 
     string getDescription() const { return description; }
-
-    template<typename T>
-    void print_left(int width, const T& obj) {
-        cout << left << setw(width) << obj;
-    }
-
-    template<typename T>
-    void print_middle(int width, const T& obj) {
-        ostringstream oss;
-        oss << obj;
-        string str = oss.str();
-        int padding_left = (width - str.size()) / 2;
-        int padding_right = width - str.size() - padding_left;
-
-        cout << setw(padding_left) << "" << obj << setw(padding_right) << "";
-    }
-
-    template<typename T>
-    void print_right(int width, const T& obj) {
-        cout << right << setw(width) << obj;
-    }
 };
 
 class Task : public Command {
@@ -71,5 +50,26 @@ void init();
 int execute(utils::Args args);
 
 void show_help(utils::Args args);
+
+template<typename T>
+void print_left(int width, const T& obj) {
+    cout << left << setw(width) << obj;
+}
+
+template<typename T>
+void print_middle(int width, const T& obj) {
+    ostringstream oss;
+    oss << obj;
+    string str = oss.str();
+    int padding_left = (width - str.size()) / 2;
+    int padding_right = width - str.size() - padding_left;
+
+    cout << setw(padding_left) << "" << obj << setw(padding_right) << "";
+}
+
+template<typename T>
+void print_right(int width, const T& obj) {
+    cout << right << setw(width) << obj;
+}
 
 }

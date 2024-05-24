@@ -1,37 +1,51 @@
 #include "show.h"
 
+void cmds::products::Show::display_product_vertical(shared_ptr<pharmacy::Product> p) {
+    cout << "Product UID: " << p->getUID() << endl;
+    cout << "Product name: " << p->getName() << endl;
+    cout << "Product type: " << p->getType() << endl;
+    cout << "Product location: " << p->getLocation() << endl;
+    cout << "Product quantity: " << p->getQuantity() << endl;
+    cout << "Product available quantity: " << p->getAvailableQuantity() << endl;
+}
+
+void cmds::products::Show::display_header_horizontal() {
+    print_left(10, "UID");
+    print_middle(30, "Name");
+    print_middle(30, "Type");
+    print_middle(40, "Location");
+    print_right(10, "Quantity");
+    cout << endl;
+    cout << string(120, '-') << endl;
+}
+
+void cmds::products::Show::display_product_horizontal(shared_ptr<pharmacy::Product> p) {
+    print_left(10, p->getUID());
+    print_middle(30, p->getName());
+    print_middle(30, p->getType());
+    print_middle(40, p->getLocation());
+    print_right(10, p->getQuantity());
+    cout << endl;
+}
+
 int cmds::products::Show::execute(utils::Args args) {
     if (args.remaining() > 1) return HELP;
     if (args.remaining() == 1) {
-        string id = args.String();
-        int index = pharmacy::find_product(id);
-        if (index == -1) {
-            cout << "Product with ID " << id << " does not exist." << endl;
+        string uid = args.String();
+        if (!pharmacy::product_exists(uid)) {
+            cout << "Product with UID " << uid << " does not exist." << endl;
             return FAIL;
         }
 
-        shared_ptr<pharmacy::Product> p = pharmacy::products[index];
-        cout << "Product ID: " << p->getID() << endl;
-        cout << "Product type: " << p->getType() << endl;
-        cout << "Product location: " << p->getLocation() << endl;
-        cout << "Product quantity: " << p->getQuantity() << endl;
-        cout << "Product available quantity: " << p->getAvailableQuantity() << endl;
+        display_product_vertical(pharmacy::products[uid]);
         return SUCCESS;
     }
 
-    print_left(30, "ID");
-    print_middle(30, "Type");
-    print_middle(40, "Location");
-    print_right(20, "Quantity");
-    cout << endl;
-    cout << string(120, '-') << endl;
+    display_header_horizontal();
+    for (auto& pair : pharmacy::products) {
+        auto p = pair.second;
 
-    for (shared_ptr<pharmacy::Product>& p : pharmacy::products) {
-        print_left(30, p->getID());
-        print_middle(30, p->getType());
-        print_middle(40, p->getLocation());
-        print_right(20, p->getQuantity());
-        cout << endl;
+        display_product_horizontal(p);
     }
 
     return SUCCESS;

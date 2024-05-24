@@ -6,16 +6,19 @@ namespace pharmacy {
 
 class Product {
 private:
-    string id;
+    string uid;
+    string name;
     string type;
     string location;
     int quantity;
     
 public:
-    Product(string id, string type, string location, int quantity)
-        : id(id), type(type), location(location), quantity(quantity) {}
+    Product(string uid, string name, string type, string location, int quantity)
+        : uid(uid), name(name), type(type), location(location), quantity(quantity) {}
 
-    string getID() { return id; }
+    string getUID() { return uid; }
+
+    string getName() { return name; }
 
     string getType() { return type; }
 
@@ -46,23 +49,26 @@ public:
     string getName() { return name; }
 };
 
-extern vector<shared_ptr<pharmacy::Product>> products;
-extern map<string, unique_ptr<pharmacy::Reservation>> reservations;
+extern map<string, shared_ptr<Product>> products;
+extern map<string, shared_ptr<Reservation>> reservations;
 
 void init();
 
-bool add_product(string id, string type, string location, int quantity);
+void add_product(string name, string type, string location, int quantity);
 
-bool remove_product(string id);
+bool remove_product(string uid);
 
-int find_product(string id);
+bool product_exists(string uid);
 
-bool product_exists(string id);
+vector<shared_ptr<Product>> filter_products(function<bool(shared_ptr<Product>)> filter);
 
-bool add_reservation(string product, int quantity, string name);
+// 0 - success, 1 - product not found, 2 - quantity not available
+int add_reservation(string productUID, int quantity, string name);
 
 bool remove_reservation(string uid);
 
 bool reservation_exists(string uid);
+
+vector<shared_ptr<Reservation>> filter_reservations(function<bool(shared_ptr<Reservation>)> filter);
 
 }

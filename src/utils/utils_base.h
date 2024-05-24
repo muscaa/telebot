@@ -9,11 +9,12 @@
 #include <cstdarg>
 #include <filesystem>
 #include <sstream>
-
-#define function(function_name, ...) (*function_name)(__VA_ARGS__)
+#include <functional>
 
 using namespace std;
 
 namespace utils {
+
+string lower(string s);
 
 }

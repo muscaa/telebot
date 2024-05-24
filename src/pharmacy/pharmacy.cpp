@@ -1,29 +1,33 @@
 #include "pharmacy.h"
 
-#define CONFIG_FILE "products.dat"
+#define CONFIG_FILE "pharmacy.dat"
 #define UID_LENGTH 4
 
-vector<shared_ptr<pharmacy::Product>> pharmacy::products = vector<shared_ptr<pharmacy::Product>>();
-map<string, unique_ptr<pharmacy::Reservation>> pharmacy::reservations = map<string, unique_ptr<pharmacy::Reservation>>();
+map<string, shared_ptr<pharmacy::Product>> pharmacy::products = map<string, shared_ptr<pharmacy::Product>>();
+map<string, shared_ptr<pharmacy::Reservation>> pharmacy::reservations = map<string, shared_ptr<pharmacy::Reservation>>();
 
 static void save_products() {
     utils::ConfigWriter out(CONFIG_FILE);
 
     out.Int(pharmacy::products.size());
-    for (shared_ptr<pharmacy::Product>& p : pharmacy::products) {
-        out.LenString(p->getID());
+    for (auto& pair : pharmacy::products) {
+        auto p = pair.second;
+
+        out.LenString(p->getUID());
+        out.LenString(p->getName());
         out.LenString(p->getType());
         out.LenString(p->getLocation());
         out.Int(p->getQuantity());
+    }
 
-        /*out.Int(p->reservations->length);
-        for (int j = 0; j < p->reservations->length; j++) {
-            reservation r = mcall(p->reservations, get, j);
+    out.Int(pharmacy::reservations.size());
+    for (auto& pair : pharmacy::reservations) {
+        auto r = pair.second;
 
-            out.Bytes(r->uid->data, UID_LENGTH);
-            out.LenString(r->name);
-            out.Int(r->quantity);
-        }*/
+        out.LenString(r->getUID());
+        out.LenString(r->getProduct()->getUID());
+        out.Int(r->getQuantity());
+        out.LenString(r->getName());
     }
 
     out.close();
@@ -39,37 +43,36 @@ static void load_products() {
 
     int products_length = in.Int();
     for (int i = 0; i < products_length; i++) {
-        string id = in.LenString();
+        string uid = in.LenString();
+        string name = in.LenString();
         string type = in.LenString();
         string location = in.LenString();
         int quantity = in.Int();
 
-        auto p = make_shared<pharmacy::Product>(id, type, location, quantity);
+        pharmacy::products[uid] = make_shared<pharmacy::Product>(uid, name, type, location, quantity);
+    }
 
-        /*int reservations_length = in.Int();
-        for (int j = 0; j < reservations_length; j++) {
-            HASH uid = new(HASH, UID_LENGTH, in.Bytes(UID_LENGTH));
-            string name = in.LenString();
-            int quantity = in.Int();
+    int reservations_length = in.Int();
+    for (int i = 0; i < reservations_length; i++) {
+        string uid = in.LenString();
+        string productUID = in.LenString();
+        int quantity = in.Int();
+        string name = in.LenString();
 
-            mcall(p->reservations, add, new(reservation, uid, p, name, quantity));
-        }*/
-
-        pharmacy::products.push_back(p);
+        pharmacy::reservations[uid] = make_shared<pharmacy::Reservation>(uid, pharmacy::products[productUID], quantity, name);
     }
     
     in.close();
 }
 
 int pharmacy::Product::getAvailableQuantity() {
-    int index = find_product(id);
-    if (index == -1) return -1;
+    if (!product_exists(uid)) return -1;
 
     int available = quantity;
 
-    for (auto it = reservations.begin(); it != reservations.end(); it++) {
-        if (it->second->getProduct()->getID() == id) {
-            available -= it->second->getQuantity();
+    for (auto& pair : reservations) {
+        if (pair.second->getProduct()->getUID() == uid) {
+            available -= pair.second->getQuantity();
         }
     }
 
@@ -80,63 +83,67 @@ void pharmacy::init() {
     load_products();
 }
 
-bool pharmacy::add_product(string id, string type, string location, int quantity) {
-    if (product_exists(id)) return false;
+void pharmacy::add_product(string name, string type, string location, int quantity) {
+    string uid;
+    do {
+        uid = utils::HASH::random(UID_LENGTH).toHex();
+    } while (product_exists(uid));
 
-    products.push_back(make_shared<pharmacy::Product>(id, type, location, quantity));
+    products[uid] = make_shared<Product>(uid, name, type, location, quantity);
 
     save_products();
-
-    return true;
 }
 
-bool pharmacy::remove_product(string id) {
-    int index = find_product(id);
-    if (index == -1) return false;
+bool pharmacy::remove_product(string uid) {
+    if (!product_exists(uid)) return false;
 
     for (auto it = reservations.begin(); it != reservations.end();) {
-        if (it->second->getProduct()->getID() == id) {
+        if (it->second->getProduct()->getUID() == uid) {
             it = reservations.erase(it);
         } else {
             it++;
         }
     }
 
-    products.erase(products.begin() + index);
+    products.erase(uid);
 
     save_products();
 
     return true;
 }
 
-int pharmacy::find_product(string id) {
-    for (size_t i = 0; i < products.size(); i++) {
-        if (products[i]->getID() == id) return i;
+bool pharmacy::product_exists(string uid) {
+    return products.find(uid) != products.end();
+}
+
+vector<shared_ptr<pharmacy::Product>> pharmacy::filter_products(function<bool(shared_ptr<Product>)> filter) {
+    vector<shared_ptr<Product>> result;
+
+    for (auto& pair : products) {
+        if (filter(pair.second)) {
+            result.push_back(pair.second);
+        }
     }
-    return -1;
+
+    return result;
 }
 
-bool pharmacy::product_exists(string id) {
-    return find_product(id) != -1;
-}
+int pharmacy::add_reservation(string productUID, int quantity, string name) {
+    if (!product_exists(productUID)) return 1;
 
-bool pharmacy::add_reservation(string product, int quantity, string name) {
-    int index = find_product(product);
-    if (index == -1) return false;
-
-    shared_ptr<Product> p = products[index];
-    if (quantity > p->getAvailableQuantity()) return false;
+    shared_ptr<Product> p = products[productUID];
+    if (quantity > p->getAvailableQuantity()) return 2;
 
     string uid;
     do {
         uid = utils::HASH::random(UID_LENGTH).toHex();
     } while (reservation_exists(uid));
 
-    reservations[uid] = make_unique<Reservation>(uid, p, quantity, name);
+    reservations[uid] = make_shared<Reservation>(uid, p, quantity, name);
 
     save_products();
 
-    return true;
+    return 0;
 }
 
 bool pharmacy::remove_reservation(string uid) {
@@ -151,4 +158,16 @@ bool pharmacy::remove_reservation(string uid) {
 
 bool pharmacy::reservation_exists(string uid) {
     return reservations.find(uid) != reservations.end();
+}
+
+vector<shared_ptr<pharmacy::Reservation>> pharmacy::filter_reservations(function<bool(shared_ptr<Reservation>)> filter) {
+    vector<shared_ptr<Reservation>> result;
+
+    for (auto& pair : reservations) {
+        if (filter(pair.second)) {
+            result.push_back(pair.second);
+        }
+    }
+
+    return result;
 }
