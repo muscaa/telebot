@@ -13,7 +13,10 @@ static void save_products() {
     for (auto& pair : pharmacy::products) {
         auto p = pair.second;
 
-        out.LenString(p->getUID());
+        byte buid[UID_LENGTH];
+        utils::hex_bytes(buid, p->getUID());
+
+        out.Bytes(buid, UID_LENGTH);
         out.LenString(p->getName());
         out.LenString(p->getType());
         out.LenString(p->getLocation());
@@ -24,7 +27,10 @@ static void save_products() {
     for (auto& pair : pharmacy::reservations) {
         auto r = pair.second;
 
-        out.LenString(r->getUID());
+        byte buid[UID_LENGTH];
+        utils::hex_bytes(buid, r->getUID());
+
+        out.Bytes(buid, UID_LENGTH);
         out.LenString(r->getProduct()->getUID());
         out.Int(r->getQuantity());
         out.LenString(r->getName());
@@ -43,7 +49,10 @@ static void load_products() {
 
     int products_length = in.Int();
     for (int i = 0; i < products_length; i++) {
-        string uid = in.LenString();
+        byte buid[UID_LENGTH];
+        in.Bytes(buid, UID_LENGTH);
+
+        string uid = utils::hex_string(buid, UID_LENGTH);
         string name = in.LenString();
         string type = in.LenString();
         string location = in.LenString();
@@ -54,7 +63,10 @@ static void load_products() {
 
     int reservations_length = in.Int();
     for (int i = 0; i < reservations_length; i++) {
-        string uid = in.LenString();
+        byte buid[UID_LENGTH];
+        in.Bytes(buid, UID_LENGTH);
+
+        string uid = utils::hex_string(buid, UID_LENGTH);
         string productUID = in.LenString();
         int quantity = in.Int();
         string name = in.LenString();
