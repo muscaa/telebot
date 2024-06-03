@@ -1,6 +1,6 @@
 #include "pharmacy/pharmacy.hpp"
 
-#define CONFIG_FILE "pharmacy.dat"
+#define CONFIG_FILE "config/pharmacy.dat"
 #define UID_LENGTH 4
 
 map<string, shared_ptr<pharmacy::Product>> pharmacy::products = map<string, shared_ptr<pharmacy::Product>>();

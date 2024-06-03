@@ -12,7 +12,16 @@ static byte read(ifstream& in) {
     return b;
 }
 
-utils::ConfigWriter::ConfigWriter(string file) : outStream(file, ios::binary) {}
+utils::ConfigWriter::ConfigWriter(string file) {
+    filesystem::path file_path = file;
+    filesystem::path parent_path = file_path.parent_path();
+
+    if (!parent_path.empty() && !filesystem::exists(parent_path)) {
+        filesystem::create_directories(parent_path);
+    }
+
+    outStream.open(file_path, ios::binary);
+}
 
 void utils::ConfigWriter::Bool(bool value) {
     bool_to_bytes(value, [&](byte b) { write(b, outStream); });
