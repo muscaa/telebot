@@ -1,4 +1,4 @@
-#include "args.h"
+#include "utils/system/args.hpp"
 
 utils::Args::Args(vector<string> argsArray) : argsArray(argsArray), currentIndex(0) {}
 

@@ -1,4 +1,4 @@
-#include "add.h"
+#include "cmds/products/add.hpp"
 
 int cmds::products::Add::execute(utils::Args args) {
     if (args.remaining() != 4) return HELP;

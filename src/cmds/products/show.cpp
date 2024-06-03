@@ -1,4 +1,4 @@
-#include "show.h"
+#include "cmds/products/show.hpp"
 
 void cmds::products::Show::display_product_vertical(shared_ptr<pharmacy::Product> p) {
     cout << "Product UID: " << p->getUID() << endl;

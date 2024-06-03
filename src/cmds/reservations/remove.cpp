@@ -1,4 +1,4 @@
-#include "remove.h"
+#include "cmds/reservations/remove.hpp"
 
 int cmds::reservations::Remove::execute(utils::Args args) {
     if (args.remaining() == 0) return HELP;

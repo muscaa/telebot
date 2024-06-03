@@ -1,6 +1,6 @@
-#include "find.h"
+#include "cmds/reservations/find.hpp"
 
-#include "show.h"
+#include "cmds/reservations/show.hpp"
 
 int cmds::reservations::Find::execute(utils::Args args) {
     if (args.remaining() == 0) return HELP;

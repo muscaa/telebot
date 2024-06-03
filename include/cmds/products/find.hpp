@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../command.h"
+#include "../command.hpp"
 
-namespace cmds::reservations {
+namespace cmds::products {
 
 /**
- * @brief Command to find reservations in the system.
+ * @brief Command to find products in the system.
  *
- * This class provides a command to find reservations in the system based on specified criteria such as uid, product UID, quantity, and/or name.
+ * This class provides a command to find products in the system based on specified criteria such as uid, name, type, location, and/or quantity.
  */
 class Find : public Command {
 public:
@@ -19,14 +19,14 @@ public:
     Find() : Command(
         "Find",
         { "find" },
-        "uid=[value] productUID=[value] quantity=[value] name=[value]",
-        "Finds reservations in the system with the specified uid, product UID, quantity and/or name."
+        "uid=[value] name=[value] type=[value] location=[value] quantity=[value]",
+        "Finds products in the system with the specified uid, name, type, location and/or quantity."
     ) {}
 
     /**
      * @brief Executes the Find command.
      *
-     * This function executes the Find command to find reservations in the system based on the provided arguments.
+     * This function executes the Find command to find products in the system based on the provided arguments.
      *
      * @param args The arguments for the command.
      * @return The status code after execution (e.g., SUCCESS, FAIL).

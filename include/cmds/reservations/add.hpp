@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../command.h"
+#include "../command.hpp"
 
-namespace cmds::products {
+namespace cmds::reservations {
 
 /**
- * @brief Command to add a product to the system.
+ * @brief Command to add a reservation to the system.
  *
- * This class provides a command to add a product to the system with the specified name, type, location, and quantity.
+ * This class provides a command to add a reservation to the system with the specified product UID, quantity, and name.
  */
 class Add : public Command {
 public:
@@ -19,14 +19,14 @@ public:
     Add() : Command(
         "Add",
         { "add" },
-        "<name> <type> <location> <quantity>",
-        "Adds a product to the system with the specified name, type, location and quantity."
+        "<productUID> <quantity> <name>",
+        "Adds a reservation to the system with the specified product UID, quantity and name."
     ) {}
 
     /**
      * @brief Executes the Add command.
      *
-     * This function executes the Add command to add a product to the system based on the provided arguments.
+     * This function executes the Add command to add a reservation to the system based on the provided arguments.
      *
      * @param args The arguments for the command.
      * @return The status code after execution (e.g., SUCCESS, FAIL).

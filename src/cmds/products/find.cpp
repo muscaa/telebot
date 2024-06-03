@@ -1,6 +1,6 @@
-#include "find.h"
+#include "cmds/products/find.hpp"
 
-#include "show.h"
+#include "cmds/products/show.hpp"
 
 int cmds::products::Find::execute(utils::Args args) {
     if (args.remaining() == 0) return HELP;

@@ -9,4 +9,4 @@ mkdir -p build/
 cpp_files=$(find src/ -name '*.cpp')
 
 # Compile all C++ files
-g++ -std=c++17 -Wall -o build/program $cpp_files
+g++ -std=c++17 -Wall -Iinclude -o build/program $cpp_files

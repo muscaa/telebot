@@ -1,6 +1,6 @@
-#include "hash.h"
+#include "utils/hash/hash.hpp"
 
-#include "../system/random.h"
+#include "utils/system/random.hpp"
 
 #define HEX_STRING "0123456789ABCDEF"
 #define HEX_BYTES(c) ((c >= '0' && c <= '9') ? c - '0' : ((c >= 'A' && c <= 'F') ? c - 'A' + 10 : c - 'a' + 10))

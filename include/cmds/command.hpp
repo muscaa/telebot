@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../utils.h"
-#include "../pharmacy/pharmacy.h"
+#include "../utils.hpp"
+#include "../pharmacy/pharmacy.hpp"
 
 #define HELP -1
 #define SUCCESS 0

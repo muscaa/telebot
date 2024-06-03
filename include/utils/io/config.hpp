@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../utils_base.h"
-#include "../types/byte.h"
+#include "../utils_base.hpp"
+#include "../types/byte.hpp"
 
 namespace utils {
 

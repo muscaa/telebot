@@ -1,4 +1,4 @@
-#include "byte.h"
+#include "utils/types/byte.hpp"
 
 #include <limits>
 

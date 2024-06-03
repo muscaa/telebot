@@ -1,4 +1,4 @@
-#include "remove.h"
+#include "cmds/products/remove.hpp"
 
 int cmds::products::Remove::execute(utils::Args args) {
     if (args.remaining() == 0) return HELP;

@@ -1,6 +1,6 @@
-#include "show.h"
+#include "cmds/reservations/show.hpp"
 
-#include "../products/show.h"
+#include "cmds/products/show.hpp"
 
 void cmds::reservations::Show::display_reservation_vertical(shared_ptr<pharmacy::Reservation> r) {
     cout << "Reservation UID: " << r->getUID() << endl;

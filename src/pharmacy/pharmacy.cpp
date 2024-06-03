@@ -1,4 +1,4 @@
-#include "pharmacy.h"
+#include "pharmacy/pharmacy.hpp"
 
 #define CONFIG_FILE "pharmacy.dat"
 #define UID_LENGTH 4

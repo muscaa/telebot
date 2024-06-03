@@ -1,4 +1,4 @@
-#include "add.h"
+#include "cmds/reservations/add.hpp"
 
 int cmds::reservations::Add::execute(utils::Args args) {
     if (args.remaining() != 3) return HELP;

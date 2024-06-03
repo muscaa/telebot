@@ -11,4 +11,4 @@ for /r src %%f in (*.cpp) do (
 )
 
 rem Compile all C++ files
-g++ -std=c++17 -Wall -o build\program !cpp_files!
+g++ -std=c++17 -Wall -Iinclude -o build\program !cpp_files!

@@ -1,14 +1,14 @@
-#include "command.h"
+#include "cmds/command.hpp"
 
-#include "products/show.h"
-#include "products/find.h"
-#include "products/add.h"
-#include "products/remove.h"
+#include "cmds/products/show.hpp"
+#include "cmds/products/find.hpp"
+#include "cmds/products/add.hpp"
+#include "cmds/products/remove.hpp"
 
-#include "reservations/show.h"
-#include "reservations/find.h"
-#include "reservations/add.h"
-#include "reservations/remove.h"
+#include "cmds/reservations/show.hpp"
+#include "cmds/reservations/find.hpp"
+#include "cmds/reservations/add.hpp"
+#include "cmds/reservations/remove.hpp"
 
 #define HELP_SPACES "  "
 
