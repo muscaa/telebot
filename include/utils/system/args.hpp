@@ -87,6 +87,15 @@ public:
      * @return The current argument as an integer.
      */
     int Int();
+
+    /**
+     * @brief Converts the current argument to a float.
+     *
+     * This function converts the current argument to a float.
+     *
+     * @return The current argument as a float.
+     */
+    float Float();
 };
 
 /**

@@ -30,6 +30,10 @@ int utils::Args::Int() {
     return stoi(String());
 }
 
+float utils::Args::Float() {
+    return stof(String());
+}
+
 utils::Args utils::args(int argc, char* argv[]) {
     vector<string> argsArray;
     for (int i = 1; i < argc; i++) {
