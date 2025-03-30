@@ -8,7 +8,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
 
 # ImGui
-file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/src/*.cpp")
+file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
 
 add_executable(telebot
     ${MAIN_SOURCES}
@@ -16,7 +16,7 @@ add_executable(telebot
 )
 target_include_directories(telebot PRIVATE
     include
-    lib/imgui/include
+    lib/imgui
 )
 
 # SDL
