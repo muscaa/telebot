@@ -12,5 +12,5 @@ def build():
     if os.path.exists("build/Release/"):
         shutil.rmtree("build/Release/")
 
-    subprocess.run(["cmake", "-S", ".", "-B", "build"])
-    subprocess.run(["cmake", "--build", "build", "--config", "Release"])
+    subprocess.run(["cmake", "--preset", "conan-default"])
+    subprocess.run(["cmake", "--build", "--preset", "conan-release"])

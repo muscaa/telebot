@@ -1,3 +1,5 @@
+import subprocess
+
 INITED = False
 
 def init():
@@ -8,3 +10,6 @@ def init():
     INITED = True
 
     print("Initializing...")
+
+    subprocess.run(["conan", "install", ".", "--build=missing"])
+    

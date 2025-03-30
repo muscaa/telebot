@@ -4,6 +4,9 @@ project(telebot)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
+# Conan packages
+find_package(SDL3 REQUIRED)
+
 # Main
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
 
@@ -20,5 +23,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # SDL
-add_subdirectory(lib/SDL EXCLUDE_FROM_ALL)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
