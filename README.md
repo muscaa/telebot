@@ -2,13 +2,14 @@
 
 ## Requirements
 
-- cmake
+- cmake 3.23
 - python 3
+- conan 2
 
 ## Usage
 
 ```bash
-git clone --recursive https://github.com/muscaa/telebot.git
+git clone https://github.com/muscaa/telebot.git
 ```
 
 ```bash
