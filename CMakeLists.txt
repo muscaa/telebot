@@ -10,15 +10,15 @@ file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
 # ImGui
 file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
 
-add_executable(telebot
+add_executable(${PROJECT_NAME}
     ${MAIN_SOURCES}
     ${IMGUI_SOURCES}
 )
-target_include_directories(telebot PRIVATE
+target_include_directories(${PROJECT_NAME} PRIVATE
     include
     lib/imgui
 )
 
 # SDL
 add_subdirectory(lib/SDL EXCLUDE_FROM_ALL)
-target_link_libraries(telebot PRIVATE SDL3::SDL3)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
