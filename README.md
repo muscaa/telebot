@@ -4,7 +4,7 @@
 
 - cmake 3.23
 - python 3
-- conan 2
+- vcpkg
 
 ## Usage
 
