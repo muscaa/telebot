@@ -6,6 +6,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 # Conan packages
 find_package(SDL3 CONFIG REQUIRED)
+find_package(Stb REQUIRED)
 
 # Main
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
@@ -23,4 +24,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # SDL
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    SDL3::SDL3
+    ${Stb_INCLUDE_DIR}
+)

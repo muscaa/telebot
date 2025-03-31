@@ -3,6 +3,8 @@
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 
+#include "utils.h"
+
 namespace TeleBot {
 
 SDL_Window *window = nullptr;
@@ -73,6 +75,10 @@ void Render() {
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    SDL_Texture* my_texture;
+    int my_image_width, my_image_height;
+    bool ret = LoadTextureFromFile("image.jpg", renderer, &my_texture, &my_image_width, &my_image_height);
+
     // Main loop
     running = true;
     while (running) {
@@ -132,6 +138,7 @@ void Render() {
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+            ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_image_width, my_image_height));
             ImGui::End();
         }
 
@@ -150,6 +157,12 @@ void Render() {
         //SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
         SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         SDL_RenderClear(renderer);
+
+        if (my_texture) {
+            SDL_FRect destRect = {200, 150, 400, 300};  // x, y, width, height
+            SDL_RenderTexture(renderer, my_texture, nullptr, &destRect);
+        }
+
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
         SDL_RenderPresent(renderer);
     }
