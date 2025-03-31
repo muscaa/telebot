@@ -1,18 +1,18 @@
-#include "telebot.h"
+#include "telebot/telebot.h"
 
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 
-#include "utils.h"
+#include "telebot/utils/texture.h"
 
-namespace TeleBot {
+namespace telebot {
 
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
-ImGuiIO *io = nullptr;
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
+ImGuiIO* io = nullptr;
 bool running = false;
 
-bool Init() {
+bool init() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         SDL_Log("Error: SDL_Init(): %s\n", SDL_GetError());
         return false;
@@ -69,15 +69,13 @@ bool Init() {
     return true;
 }
 
-void Render() {
+void run() {
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    SDL_Texture* my_texture;
-    int my_image_width, my_image_height;
-    bool ret = LoadTextureFromFile("image.jpg", renderer, &my_texture, &my_image_width, &my_image_height);
+    SDL_Texture* my_texture = telebot::utils::load_texture_from_file(renderer, "image.jpg");
 
     // Main loop
     running = true;
@@ -138,7 +136,7 @@ void Render() {
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
-            ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_image_width, my_image_height));
+            ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_texture->w, my_texture->h));
             ImGui::End();
         }
 
@@ -168,7 +166,7 @@ void Render() {
     }
 }
 
-void Dispose() {
+void dispose() {
     running = false;
 
     // Cleanup
@@ -182,4 +180,4 @@ void Dispose() {
     SDL_Quit();
 }
 
-} // namespace TeleBot
+}  // namespace telebot
