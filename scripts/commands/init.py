@@ -11,5 +11,5 @@ def init():
 
     print("Initializing...")
 
-    subprocess.run(["conan", "install", ".", "--build=missing"])
+    subprocess.run(["vcpkg", "install"])
     

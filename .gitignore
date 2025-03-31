@@ -5,6 +5,9 @@
 build/
 CMakeUserPresets.json
 
+# VCPkg
+vcpkg_installed/
+
 # Python
 __pycache__/
 

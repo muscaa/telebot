@@ -4,8 +4,8 @@ import os
 def run():
     print("Running...")
 
-    if os.path.exists("build/Release/telebot.exe"):
-        subprocess.run(["build/Release/telebot.exe"])
+    if os.path.exists("build/telebot.exe"):
+        subprocess.run(["build/telebot.exe"])
     elif os.path.exists("build/telebot"):
         subprocess.run(["build/telebot"])
     else:
