@@ -5,14 +5,15 @@
 
 namespace TeleBot {
 
-    extern SDL_Window *window;
-    extern SDL_Renderer *renderer;
-    extern ImGuiIO *io;
-    extern bool running;
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+extern ImGuiIO *io;
+extern bool running;
 
-    bool Init();
+bool Init();
 
-    void Render();
+void Render();
 
-    void Dispose();
-}
+void Dispose();
+
+}  // namespace TeleBot
