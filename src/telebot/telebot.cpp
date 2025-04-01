@@ -4,6 +4,7 @@
 #include <imgui_impl_sdlrenderer3.h>
 
 #include "telebot/utils/texture.h"
+#include "telebot/utils/socket.h"
 
 namespace telebot {
 
@@ -134,6 +135,14 @@ void run() {
             }
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
+
+            if (ImGui::Button("Server")) {
+                telebot::utils::start_server();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Client")) {
+                telebot::utils::start_client();
+            }
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
             ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_texture->w, my_texture->h));
