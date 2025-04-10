@@ -80,7 +80,7 @@ void stream_video(SDL_Texture* texture) {
         short frame_height = (video_buffer->buffer[6] & 0xFF) << 8 | (video_buffer->buffer[7] & 0xFF);
         SDL_Rect rect = {frame_x, frame_y, frame_width, frame_height};
 
-        telebot::utils::update_texture(texture, reinterpret_cast<std::byte*>(video_buffer->buffer + HEADER_SIZE), video_buffer->len - HEADER_SIZE, &rect);
+        telebot::utils::update_texture(texture, video_buffer->buffer + HEADER_SIZE, video_buffer->len - HEADER_SIZE, &rect);
 
         video_buffer->len = 0;
         video_buffer->inUse = false;

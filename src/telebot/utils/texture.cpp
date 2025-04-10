@@ -10,20 +10,20 @@
 
 namespace telebot::utils {
 
-SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const std::byte* data, const size_t data_size) {
+SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const uint8_t* data, const size_t data_size) {
     const int channels = 4;
 
     int width = 0;
     int height = 0;
 
-    std::byte* image_bytes = reinterpret_cast<std::byte*>(stbi_load_from_memory(
-        reinterpret_cast<const unsigned char*>(data),
+    uint8_t* image_bytes = stbi_load_from_memory(
+        data,
         data_size,
         &width,
         &height,
         nullptr,
         channels
-    ));
+    );
     if (image_bytes == nullptr) {
         SDL_Log("Failed to load image: %s", stbi_failure_reason());
         return nullptr;
@@ -58,7 +58,7 @@ SDL_Texture* load_texture_from_file(SDL_Renderer* renderer, const std::string fi
     std::streamsize file_size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    std::vector<std::byte> buffer(file_size);
+    std::vector<uint8_t> buffer(file_size);
     if (!file.read(reinterpret_cast<char*>(buffer.data()), file_size)) {
         SDL_Log("Error reading file: %s", file_name.c_str());
         return nullptr;
@@ -67,7 +67,7 @@ SDL_Texture* load_texture_from_file(SDL_Renderer* renderer, const std::string fi
     return load_texture_from_memory(renderer, buffer.data(), buffer.size());
 }
 
-bool update_texture(SDL_Texture* texture, const std::byte* data, const size_t data_size, const SDL_Rect* rect) {
+bool update_texture(SDL_Texture* texture, const uint8_t* data, const size_t data_size, const SDL_Rect* rect) {
     if (texture == nullptr) return false;
 
     const int channels = 4;
@@ -75,14 +75,14 @@ bool update_texture(SDL_Texture* texture, const std::byte* data, const size_t da
     int width = 0;
     int height = 0;
 
-    std::byte* image_bytes = reinterpret_cast<std::byte*>(stbi_load_from_memory(
-        reinterpret_cast<const unsigned char*>(data),
+    uint8_t* image_bytes = stbi_load_from_memory(
+        data,
         data_size,
         &width,
         &height,
         nullptr,
         channels
-    ));
+    );
     if (image_bytes == nullptr) {
         SDL_Log("Failed to load image: %s", stbi_failure_reason());
         return false;
