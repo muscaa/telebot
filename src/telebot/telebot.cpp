@@ -3,18 +3,11 @@
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
 #include <string>
-#include <cstddef>
-#include <thread>
-#include <vector>
-#include <mutex>
-#include <atomic>
-#include <map>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::udp;
 
 #include "telebot/utils/texture.h"
-#include "telebot/utils/socket.h"
 #include "telebot/utils/video.h"
 
 namespace telebot {
@@ -152,14 +145,6 @@ void run() {
             }
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
-
-            if (ImGui::Button("Server")) {
-                telebot::utils::start_server();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Client")) {
-                telebot::utils::start_client();
-            }
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
             ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_texture->w, my_texture->h));
