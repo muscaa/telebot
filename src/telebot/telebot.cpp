@@ -15,6 +15,7 @@ using boost::asio::ip::udp;
 
 #include "telebot/utils/texture.h"
 #include "telebot/utils/socket.h"
+#include "telebot/utils/video.h"
 
 namespace telebot {
 
@@ -80,44 +81,6 @@ bool init() {
     return true;
 }
 
-const static int JPEG_MAX_SIZE = 128000;
-const static int NUM_THREADS = 32;
-const static int BASE_PORT = 4444;
-static boost::asio::io_context io_context;
-
-struct ThreadBuffer {
-    bool inUse;
-    size_t len;
-    unsigned char buffer[JPEG_MAX_SIZE / NUM_THREADS];
-    udp::endpoint client_endpoint;
-};
-
-static udp::socket socket(io_context, udp::endpoint(udp::v4(), BASE_PORT));
-static ThreadBuffer* threadBuffers[NUM_THREADS];
-static std::thread* pool[NUM_THREADS];
-
-static void asyncReceive() {
-    ThreadBuffer* threadBuffer;
-    for (int i = 0; i < NUM_THREADS; i++) {
-        if (!threadBuffers[i]->inUse) {
-            threadBuffer = threadBuffers[i];
-            threadBuffer->inUse = true;
-            break;
-        }
-    }
-
-    socket.async_receive_from(
-        boost::asio::buffer(threadBuffer->buffer), threadBuffer->client_endpoint,
-        [threadBuffer](const boost::system::error_code& error, std::size_t bytesReceived) {
-            asyncReceive();
-
-            if (!error) {
-                threadBuffer->len = bytesReceived;
-            }
-        }
-    );
-}
-
 void run() {
     running = true;
 
@@ -129,20 +92,7 @@ void run() {
     SDL_Texture* my_texture = telebot::utils::load_texture_from_file(renderer, "image.jpg");
     SDL_Texture* telebot_video = telebot::utils::create_texture_streaming(renderer, 1280, 720);
 
-    for (int i = 0; i < NUM_THREADS; i++) {
-        ThreadBuffer* threadBuffer = new ThreadBuffer();
-        threadBuffer->inUse = false;
-        threadBuffer->len = 0;
-        threadBuffers[i] = threadBuffer;
-    }
-
-    asyncReceive();
-
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pool[i] = new std::thread([]() {
-            io_context.run();
-        });
-    }
+    telebot::utils::start_video_server();
 
     // Main loop
     while (running) {
@@ -170,26 +120,8 @@ void run() {
             SDL_Delay(10);
             continue;
         }
-        
-        for (int i = 0; i < NUM_THREADS; i++) {
-            ThreadBuffer* threadBuffer = threadBuffers[i];
-            if (!threadBuffer->inUse) {
-                continue;
-            }
 
-            if (threadBuffer->len > 8) {
-                short frame_x = (threadBuffer->buffer[0] & 0xFF) << 8 | (threadBuffer->buffer[1] & 0xFF);
-                short frame_y = (threadBuffer->buffer[2] & 0xFF) << 8 | (threadBuffer->buffer[3] & 0xFF);
-                short frame_width = (threadBuffer->buffer[4] & 0xFF) << 8 | (threadBuffer->buffer[5] & 0xFF);
-                short frame_height = (threadBuffer->buffer[6] & 0xFF) << 8 | (threadBuffer->buffer[7] & 0xFF);
-                SDL_Rect rect = {frame_x, frame_y, frame_width, frame_height};
-
-                telebot::utils::update_texture(telebot_video, reinterpret_cast<std::byte*>(threadBuffer->buffer + 8), threadBuffer->len - 8, &rect);
-
-                threadBuffer->len = 0;
-                threadBuffer->inUse = false;
-            }
-        }
+        telebot::utils::stream_video(telebot_video);
 
         // Start the Dear ImGui frame
         ImGui_ImplSDLRenderer3_NewFrame();
@@ -264,15 +196,7 @@ void run() {
         SDL_RenderPresent(renderer);
     }
 
-    io_context.stop();
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pool[i]->join();
-        delete pool[i];
-    }
-
-    for (int i = 0; i < NUM_THREADS; i++) {
-        delete threadBuffers[i];
-    }
+    telebot::utils::stop_video_server();
 }
 
 void dispose() {
