@@ -10,4 +10,8 @@ SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const std::byte* d
 
 SDL_Texture* load_texture_from_file(SDL_Renderer* renderer, const std::string file_name);
 
+bool update_texture(SDL_Texture* texture, const std::byte* data, const size_t data_size, const SDL_Rect* rect = nullptr);
+
+SDL_Texture* create_texture_streaming(SDL_Renderer* renderer, int width, int height);
+
 }  // namespace telebot::utils

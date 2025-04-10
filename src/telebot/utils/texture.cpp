@@ -51,7 +51,7 @@ SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const std::byte* d
 SDL_Texture* load_texture_from_file(SDL_Renderer* renderer, const std::string file_name) {
     std::ifstream file(file_name, std::ios::binary | std::ios::ate);
     if (!file) {
-        SDL_Log("Could not open file: %s", file_name);
+        SDL_Log("Could not open file: %s", file_name.c_str());
         return nullptr;
     }
 
@@ -60,11 +60,47 @@ SDL_Texture* load_texture_from_file(SDL_Renderer* renderer, const std::string fi
 
     std::vector<std::byte> buffer(file_size);
     if (!file.read(reinterpret_cast<char*>(buffer.data()), file_size)) {
-        SDL_Log("Error reading file: %s", file_name);
+        SDL_Log("Error reading file: %s", file_name.c_str());
         return nullptr;
     }
 
     return load_texture_from_memory(renderer, buffer.data(), buffer.size());
+}
+
+bool update_texture(SDL_Texture* texture, const std::byte* data, const size_t data_size, const SDL_Rect* rect) {
+    if (texture == nullptr) return false;
+
+    const int channels = 4;
+
+    int width = 0;
+    int height = 0;
+
+    std::byte* image_bytes = reinterpret_cast<std::byte*>(stbi_load_from_memory(
+        reinterpret_cast<const unsigned char*>(data),
+        data_size,
+        &width,
+        &height,
+        nullptr,
+        channels
+    ));
+    if (image_bytes == nullptr) {
+        SDL_Log("Failed to load image: %s", stbi_failure_reason());
+        return false;
+    }
+
+    bool result = SDL_UpdateTexture(texture, rect, image_bytes, channels * width);
+    stbi_image_free(image_bytes);
+    return result;
+}
+
+SDL_Texture* create_texture_streaming(SDL_Renderer* renderer, int width, int height) {
+    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
+    if (texture == nullptr) {
+        SDL_Log("Failed to create SDL texture: %s", SDL_GetError());
+        return nullptr;
+    }
+
+    return texture;
 }
 
 }  // namespace telebot::utils
