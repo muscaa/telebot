@@ -46,6 +46,8 @@ jobs:
 
     - name: Check toolchain
       run: |
+        echo $PATH
+
         echo "Platform: ${{ matrix.platform }}-${{ matrix.arch }}"
         echo "GCC: "
         gcc --version
