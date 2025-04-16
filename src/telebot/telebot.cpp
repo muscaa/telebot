@@ -15,7 +15,9 @@ SDL_Renderer* renderer = nullptr;
 ImGuiIO* io = nullptr;
 SDL_Texture* texture_video_stream = nullptr;
 
-bool running = false;
+bool running;
+int screen_width;
+int screen_height;
 
 bool init() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
@@ -71,8 +73,8 @@ bool init() {
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
-    texture_video_stream = telebot::utils::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
-    telebot::utils::start_video_server();
+    texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
+    telebot::utils::video::start_video_server();
 
     return true;
 }
@@ -164,7 +166,7 @@ void run() {
         SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         SDL_RenderClear(renderer);
 
-        telebot::utils::stream_video(texture_video_stream);
+        telebot::utils::video::stream_video(texture_video_stream);
         if (texture_video_stream != nullptr) {
             SDL_FRect destRect = {0, 0, screen_width, screen_height};
             SDL_RenderTexture(renderer, texture_video_stream, nullptr, &destRect);
@@ -178,7 +180,7 @@ void run() {
 void dispose() {
     running = false;
 
-    telebot::utils::stop_video_server();
+    telebot::utils::video::stop_video_server();
 
     // Cleanup
     // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]

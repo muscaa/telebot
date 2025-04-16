@@ -3,7 +3,7 @@
 #include <string>
 #include <SDL3/SDL.h>
 
-namespace telebot::utils {
+namespace telebot::utils::texture {
 
 SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const uint8_t* data, const size_t data_size);
 

@@ -8,7 +8,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-namespace telebot::utils {
+namespace telebot::utils::texture {
 
 SDL_Texture* load_texture_from_memory(SDL_Renderer* renderer, const uint8_t* data, const size_t data_size) {
     const int channels = 4;

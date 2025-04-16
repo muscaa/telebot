@@ -3,7 +3,7 @@
 #include <boost/asio.hpp>
 #include <SDL3/SDL.h>
 
-namespace telebot::utils {
+namespace telebot::utils::video {
 
 const int JPEG_MAX_SIZE = 128000;
 const int NUM_THREADS = 32;
