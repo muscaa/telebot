@@ -32,36 +32,26 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Setup VCPKG
+    - name: Setup VCPKG (macos)
+      if: matrix.platform == 'macos'
+      run: brew install vcpkg
+
+    - name: Environment Variables
       run: |
-        git clone https://github.com/microsoft/vcpkg.git
-        ./vcpkg/bootstrap-vcpkg.sh
+        VCPKG_ROOT="$(dirname $(which vcpkg))"
+
+        echo "
+        VCPKG_ROOT=$VCPKG_ROOT
+        " >> $GITHUB_ENV
       shell: bash
 
     - name: Cache VCPKG
       uses: actions/cache@v3
       with:
         path: |
-          vcpkg/installed
-          vcpkg/buildtrees
+          ${{ env.VCPKG_ROOT }}/installed
+          ${{ env.VCPKG_ROOT }}/buildtrees
         key: vcpkg-${{ matrix.platform }}-${{ matrix.arch }}
-
-    - name: Environment Variables
-      run: |
-        VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-
-        echo "
-        VCPKG_ROOT=$VCPKG_ROOT
-        PATH="$VCPKG_ROOT:$PATH"
-        " >> $GITHUB_ENV
-      shell: bash
-
-    - name: Print Path
-      run: |
-        echo $PATH
-        which vcpkg
-        vcpkg --version
-      shell: bash
 
     - name: Build
       run: python3 scripts build
