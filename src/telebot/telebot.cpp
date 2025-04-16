@@ -80,7 +80,6 @@ void run() {
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    SDL_Texture* my_texture = telebot::utils::load_texture_from_file(renderer, "image.jpg");
     SDL_Texture* telebot_video = telebot::utils::create_texture_streaming(renderer, 1280, 720);
 
     telebot::utils::start_video_server();
@@ -111,8 +110,6 @@ void run() {
             SDL_Delay(10);
             continue;
         }
-
-        telebot::utils::stream_video(telebot_video);
 
         // Start the Dear ImGui frame
         ImGui_ImplSDLRenderer3_NewFrame();
@@ -145,7 +142,6 @@ void run() {
             ImGui::Text("counter = %d", counter);
 
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
-            ImGui::Image((ImTextureID)(intptr_t) my_texture, ImVec2(my_texture->w, my_texture->h));
             ImGui::End();
         }
 
@@ -165,11 +161,8 @@ void run() {
         SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         SDL_RenderClear(renderer);
 
-        if (my_texture) {
-            SDL_FRect destRect = {200, 150, 400, 300};  // x, y, width, height
-            SDL_RenderTexture(renderer, my_texture, nullptr, &destRect);
-        }
-
+        telebot::utils::stream_video(telebot_video);
+        
         if (telebot_video != nullptr) {
             SDL_FRect destRect = {0, 0, 1280, 720};
             SDL_RenderTexture(renderer, telebot_video, nullptr, &destRect);
