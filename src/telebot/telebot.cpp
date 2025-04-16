@@ -5,8 +5,6 @@
 #include <string>
 #include <boost/asio.hpp>
 
-using boost::asio::ip::udp;
-
 #include "telebot/utils/texture.h"
 #include "telebot/utils/video.h"
 
