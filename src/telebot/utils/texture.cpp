@@ -109,4 +109,4 @@ void delete_texture(SDL_Texture* texture) {
     }
 }
 
-}  // namespace telebot::utils
+}  // namespace telebot::utils::texture

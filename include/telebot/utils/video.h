@@ -25,4 +25,4 @@ void stream_video(SDL_Texture* texture);
 
 void stop_video_server();
 
-} // namespace telebot::utils
+} // namespace telebot::utils::video
