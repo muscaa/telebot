@@ -62,7 +62,11 @@ jobs:
         mkdir -p package
         cp build/telebot${{ matrix.ext }} package/
         
-        zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
+        if [ "${{ matrix.platform }}" = "windows" ]; then
+          powershell -Command "Compress-Archive -Path package\\* -DestinationPath ${{ matrix.platform }}-${{ matrix.arch }}.zip"
+        else
+          zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
+        fi
       shell: bash
 
     - name: Upload
