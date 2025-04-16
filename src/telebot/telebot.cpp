@@ -75,7 +75,7 @@ bool init() {
     //IM_ASSERT(font != nullptr);
 
     texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
-    telebot::server::video::start();
+    telebot::server::video::start(4444, 32, 128000);
 
     return true;
 }
