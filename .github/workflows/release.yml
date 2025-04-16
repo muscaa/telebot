@@ -12,18 +12,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            platform: linux
-            arch: x86_64
-            ext: ""
+          #- os: ubuntu-latest
+          #  platform: linux
+          #  arch: x86_64
+          #  ext: ""
           - os: windows-latest
             platform: windows
             arch: x86_64
             ext: ".exe"
-          - os: macos-latest
-            platform: macos
-            arch: arm64
-            ext: ""
+          #- os: macos-latest
+          #  platform: macos
+          #  arch: arm64
+          #  ext: ""
 
     runs-on: ${{ matrix.os }}
     name: Build on ${{ matrix.platform }}-${{ matrix.arch }}
@@ -32,59 +32,45 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Install VCPKG
+    - name: Setup VCPKG
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         ./vcpkg/bootstrap-vcpkg.sh
-
-        echo $PATH
-
-        _VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-        _PATH="$_VCPKG_ROOT:$PATH"
-
-        echo $_PATH
-
-        echo "VCPKG_ROOT=$_VCPKG_ROOT" >> $GITHUB_ENV
-        echo "PATH=$_PATH" >> $GITHUB_ENV
-
-        echo $PATH
       shell: bash
 
-    - name: Check toolchain
+    - name: Cache VCPKG
+      uses: actions/cache@v3
+      with:
+        path: |
+          vcpkg/installed
+          vcpkg/buildtrees
+        key: vcpkg-${{ matrix.platform }}-${{ matrix.arch }}
+
+    - name: Environment Variables
       run: |
-        echo $PATH
+        VCPKG_ROOT="${{ github.workspace }}/vcpkg"
 
-        echo "Platform: ${{ matrix.platform }}-${{ matrix.arch }}"
-        echo "GCC: "
-        gcc --version
+        echo "
+        VCPKG_ROOT=$VCPKG_ROOT
+        PATH="$VCPKG_ROOT:$PATH"
+        " >> $GITHUB_ENV
+      shell: bash
 
-        echo "G++: "
-        g++ --version
+    - name: Build
+      run: python3 scripts build
+      shell: bash
 
-        echo "Python3: "
-        python3 --version
-
-        echo "CMake: "
-        cmake --version
-
-        echo "Ninja: "
-        ninja --version
-
-        echo "VCPKG: "
-        vcpkg --version
-
-        echo "VCPKG Local: "
-        ./vcpkg/vcpkg --version
-
-        echo "Which VCPKG: "
-        which vcpkg
-
-        echo "VCPKG_ROOT: $VCPKG_ROOT"
+    - name: Package
+      run: |
+        mkdir -p package
+        cp build/telebot${{ matrix.ext }} package/
+        
+        zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
       shell: bash
 
     - name: Upload
       uses: softprops/action-gh-release@v1
       with:
-        files: CMakeLists.txt
+        files: ${{ matrix.platform }}-${{ matrix.arch }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
