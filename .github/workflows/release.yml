@@ -20,6 +20,7 @@ jobs:
             platform: windows
             arch: x86_64
             ext: ".exe"
+            vcpkg_triplet: x64-windows-release
           #- os: macos-latest
           #  platform: macos
           #  arch: arm64
@@ -32,26 +33,35 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Setup VCPKG (macos)
-      if: matrix.platform == 'macos'
-      run: brew install vcpkg
+    - name: Setup VCPKG
+      uses: johnwason/vcpkg-action@v6
+      id: vcpkg
+      with:
+        manifest-dir: ${{ github.workspace }}
+        triplet: ${{ matrix.vcpkg_triplet }}
+        cache-key: ${{ matrix.os }}
+        revision: master
+        token: ${{ github.token }}
+        github-binarycache: true
 
     - name: Environment Variables
       run: |
-        VCPKG_ROOT="$(dirname $(which vcpkg))"
+        VCPKG_ROOT="${{ github.workspace }}/vcpkg"
+        _PATH="$VCPKG_ROOT:$PATH"
 
         echo "
         VCPKG_ROOT=$VCPKG_ROOT
+        PATH=$_PATH
         " >> $GITHUB_ENV
       shell: bash
 
-    - name: Cache VCPKG
-      uses: actions/cache@v3
-      with:
-        path: |
-          ${{ env.VCPKG_ROOT }}/installed
-          ${{ env.VCPKG_ROOT }}/buildtrees
-        key: vcpkg-${{ matrix.platform }}-${{ matrix.arch }}
+    - name: Test Environment Variables
+      run: |
+        echo "VCPKG_ROOT: $VCPKG_ROOT"
+        echo "PATH: $PATH"
+        which vcpkg
+        vcpkg --version
+      shell: bash
 
     - name: Build
       run: python3 scripts build
