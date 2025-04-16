@@ -13,6 +13,8 @@ namespace telebot {
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 ImGuiIO* io = nullptr;
+SDL_Texture* texture_video_stream = nullptr;
+
 bool running = false;
 
 bool init() {
@@ -69,6 +71,9 @@ bool init() {
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
+    texture_video_stream = telebot::utils::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
+    telebot::utils::start_video_server();
+
     return true;
 }
 
@@ -79,10 +84,6 @@ void run() {
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-    SDL_Texture* telebot_video = telebot::utils::create_texture_streaming(renderer, 1280, 720);
-
-    telebot::utils::start_video_server();
 
     // Main loop
     while (running) {
@@ -110,6 +111,8 @@ void run() {
             SDL_Delay(10);
             continue;
         }
+
+        SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
 
         // Start the Dear ImGui frame
         ImGui_ImplSDLRenderer3_NewFrame();
@@ -161,22 +164,21 @@ void run() {
         SDL_SetRenderDrawColorFloat(renderer, clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         SDL_RenderClear(renderer);
 
-        telebot::utils::stream_video(telebot_video);
-        
-        if (telebot_video != nullptr) {
-            SDL_FRect destRect = {0, 0, 1280, 720};
-            SDL_RenderTexture(renderer, telebot_video, nullptr, &destRect);
+        telebot::utils::stream_video(texture_video_stream);
+        if (texture_video_stream != nullptr) {
+            SDL_FRect destRect = {0, 0, screen_width, screen_height};
+            SDL_RenderTexture(renderer, texture_video_stream, nullptr, &destRect);
         }
 
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
         SDL_RenderPresent(renderer);
     }
-
-    telebot::utils::stop_video_server();
 }
 
 void dispose() {
     running = false;
+
+    telebot::utils::stop_video_server();
 
     // Cleanup
     // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]

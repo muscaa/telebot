@@ -103,4 +103,10 @@ SDL_Texture* create_texture_streaming(SDL_Renderer* renderer, int width, int hei
     return texture;
 }
 
+void delete_texture(SDL_Texture* texture) {
+    if (texture != nullptr) {
+        SDL_DestroyTexture(texture);
+    }
+}
+
 }  // namespace telebot::utils

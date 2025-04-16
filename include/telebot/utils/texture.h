@@ -13,4 +13,6 @@ bool update_texture(SDL_Texture* texture, const uint8_t* data, const size_t data
 
 SDL_Texture* create_texture_streaming(SDL_Renderer* renderer, int width, int height);
 
+void delete_texture(SDL_Texture* texture);
+
 }  // namespace telebot::utils
