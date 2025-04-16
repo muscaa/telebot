@@ -57,33 +57,33 @@ jobs:
         " >> $GITHUB_ENV
       shell: bash
 
-    - name: Test Environment Variables
-      run: |
-        echo %VCPKG_ROOT%
-        echo %PATH%
-        where vcpkg
-        vcpkg --version
-      shell: cmd
+    #- name: Test Environment Variables
+    #  run: |
+    #    echo %VCPKG_ROOT%
+    #    echo %PATH%
+    #    where vcpkg
+    #    vcpkg --version
+    #  shell: cmd
 
-    - name: Build
-      run: python3 scripts build
-      shell: cmd
+    #- name: Build
+    #  run: python3 scripts build
+    #  shell: cmd
 
-    - name: Package
-      run: |
-        mkdir -p package
-        cp build/telebot${{ matrix.ext }} package/
-        
-        if [ "${{ matrix.platform }}" = "windows" ]; then
-          powershell -Command "Compress-Archive -Path package\\* -DestinationPath ${{ matrix.platform }}-${{ matrix.arch }}.zip"
-        else
-          zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
-        fi
-      shell: bash
+    #- name: Package
+    #  run: |
+    #    mkdir -p package
+    #    cp build/telebot${{ matrix.ext }} package/
+    #    
+    #    if [ "${{ matrix.platform }}" = "windows" ]; then
+    #      powershell -Command "Compress-Archive -Path package\\* -DestinationPath ${{ matrix.platform }}-${{ matrix.arch }}.zip"
+    #    else
+    #      zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
+    #    fi
+    #  shell: bash
 
-    - name: Upload
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ${{ matrix.platform }}-${{ matrix.arch }}.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #- name: Upload
+    #  uses: softprops/action-gh-release@v1
+    #  with:
+    #    files: ${{ matrix.platform }}-${{ matrix.arch }}.zip
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
