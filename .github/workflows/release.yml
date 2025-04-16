@@ -37,8 +37,8 @@ jobs:
         git clone https://github.com/microsoft/vcpkg.git
         ./vcpkg/bootstrap-vcpkg.sh
 
-        export VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-        export PATH="$VCPKG_ROOT:$PATH"
+        echo 'VCPKG_ROOT="${{ github.workspace }}/vcpkg"' >> $GITHUB_ENV
+        echo 'PATH="$VCPKG_ROOT:$PATH"' >> $GITHUB_ENV
 
     - name: Check toolchain
       run: |
