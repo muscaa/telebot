@@ -3,7 +3,7 @@
 #include <boost/asio.hpp>
 #include <SDL3/SDL.h>
 
-namespace telebot::utils::video {
+namespace telebot::server::video {
 
 const int JPEG_MAX_SIZE = 128000;
 const int NUM_THREADS = 32;
@@ -17,12 +17,12 @@ struct UDPVideoBuffer {
     bool inUse;
 };
 
-bool is_video_server_running();
+bool is_running();
 
-void start_video_server();
+void start();
 
-void stream_video(SDL_Texture* texture);
+void update(SDL_Texture* texture);
 
-void stop_video_server();
+void stop();
 
-} // namespace telebot::utils::video
+} // namespace telebot::server::video

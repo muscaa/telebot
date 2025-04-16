@@ -6,7 +6,7 @@
 #include <boost/asio.hpp>
 
 #include "telebot/utils/texture.h"
-#include "telebot/utils/video.h"
+#include "telebot/server/video.h"
 #include "telebot/render/imgui.h"
 
 namespace telebot {
@@ -75,7 +75,7 @@ bool init() {
     //IM_ASSERT(font != nullptr);
 
     texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
-    telebot::utils::video::start_video_server();
+    telebot::server::video::start();
 
     return true;
 }
@@ -125,7 +125,7 @@ void run() {
         SDL_SetRenderDrawColorFloat(renderer, 100.0F / 255.0F, 110.0F / 255.0F, 120.0F / 255.0F, 1.0F);
         SDL_RenderClear(renderer);
 
-        telebot::utils::video::stream_video(texture_video_stream);
+        telebot::server::video::update(texture_video_stream);
         if (texture_video_stream != nullptr) {
             SDL_FRect destRect = {0, 0, screen_width, screen_height};
             SDL_RenderTexture(renderer, texture_video_stream, nullptr, &destRect);
@@ -139,7 +139,7 @@ void run() {
 void dispose() {
     running = false;
 
-    telebot::utils::video::stop_video_server();
+    telebot::server::video::stop();
 
     // Cleanup
     // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]

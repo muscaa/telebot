@@ -1,4 +1,4 @@
-#include <telebot/utils/video.h>
+#include "telebot/server/video.h"
 
 #include <thread>
 
@@ -6,7 +6,7 @@
 
 using boost::asio::ip::udp;
 
-namespace telebot::utils::video {
+namespace telebot::server::video {
 
 static bool running = false;
 static boost::asio::io_context* io_context;
@@ -14,7 +14,7 @@ static udp::socket* socket;
 static UDPVideoBuffer* video_buffers[NUM_THREADS];
 static std::thread* thread_pool[NUM_THREADS];
 
-static void asyncReceive() {
+static void async_receive() {
     UDPVideoBuffer* video_buffer;
     for (int i = 0; i < NUM_THREADS; i++) {
         if (!video_buffers[i]->inUse) {
@@ -27,7 +27,7 @@ static void asyncReceive() {
     socket->async_receive_from(
         boost::asio::buffer(video_buffer->buffer), video_buffer->clientEndpoint,
         [video_buffer](const boost::system::error_code& error, std::size_t bytesReceived) {
-            asyncReceive();
+            async_receive();
 
             if (!error) {
                 video_buffer->len = bytesReceived;
@@ -36,13 +36,13 @@ static void asyncReceive() {
     );
 }
 
-bool is_video_server_running() {
+bool is_running() {
     return running;
 }
 
-void start_video_server() {
-    if (is_video_server_running()) {
-        stop_video_server();
+void start() {
+    if (is_running()) {
+        stop();
     }
 
     running = true;
@@ -58,7 +58,7 @@ void start_video_server() {
         video_buffers[i] = video_buffer;
     }
 
-    asyncReceive();
+    async_receive();
 
     for (int i = 0; i < NUM_THREADS; i++) {
         thread_pool[i] = new std::thread([]() {
@@ -67,8 +67,8 @@ void start_video_server() {
     }
 }
 
-void stream_video(SDL_Texture* texture) {
-    if (!is_video_server_running()) return;
+void update(SDL_Texture* texture) {
+    if (!is_running()) return;
 
     for (int i = 0; i < NUM_THREADS; i++) {
         UDPVideoBuffer* video_buffer = video_buffers[i];
@@ -87,8 +87,8 @@ void stream_video(SDL_Texture* texture) {
     }
 }
 
-void stop_video_server() {
-    if (!is_video_server_running()) return;
+void stop() {
+    if (!is_running()) return;
 
     running = false;
     SDL_Log("Stopping video server...\n");
@@ -104,4 +104,4 @@ void stop_video_server() {
     }
 }
 
-} // namespace telebot::utils::video
+} // namespace telebot::server::video
