@@ -32,6 +32,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Install VCPKG
+      if: runner.os == 'macOS'
+      run: brew install vcpkg
+
     - name: Check toolchain
       run: |
         echo "Platform: ${{ matrix.platform }}-${{ matrix.arch }}"
@@ -50,10 +54,8 @@ jobs:
         echo "Ninja: "
         ninja --version
 
-        if [[ "${{ matrix.platform }}" != "macos" ]]; then
-            echo "VCPKG: "
-            vcpkg --version
-        fi
+        echo "VCPKG: "
+        vcpkg --version
       shell: bash
 
     - name: Upload
