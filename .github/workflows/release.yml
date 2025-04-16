@@ -50,8 +50,10 @@ jobs:
         echo "Ninja: "
         ninja --version
 
-        echo "VCPKG: "
-        vcpkg --version
+        if [[ "${{ matrix.platform }}" != "macos" ]]; then
+            echo "VCPKG: "
+            vcpkg --version
+        fi
       shell: bash
 
     - name: Upload
