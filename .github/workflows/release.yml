@@ -50,3 +50,10 @@ jobs:
         echo "VCPKG: "
         vcpkg --version
       shell: bash
+
+    - name: Upload
+      uses: softprops/action-gh-release@v1
+      with:
+        files: CMakeLists.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
