@@ -11,7 +11,5 @@ def init():
 
     print("Initializing...")
 
-    subprocess.run(["which", "vcpkg"])
-
     subprocess.run(["vcpkg", "install"])
     
