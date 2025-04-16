@@ -56,6 +56,8 @@ jobs:
 
         echo "VCPKG: "
         vcpkg --version
+
+        echo "VCPKG_ROOT: $VCPKG_ROOT"
       shell: bash
 
     - name: Upload
