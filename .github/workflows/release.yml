@@ -49,6 +49,8 @@ jobs:
         VCPKG_ROOT="${{ github.workspace }}/vcpkg"
         _PATH="$VCPKG_ROOT:$PATH"
 
+        ls $VCPKG_ROOT
+
         echo "
         VCPKG_ROOT=$VCPKG_ROOT
         PATH=$_PATH
@@ -57,15 +59,15 @@ jobs:
 
     - name: Test Environment Variables
       run: |
-        echo "VCPKG_ROOT: $VCPKG_ROOT"
-        echo "PATH: $PATH"
-        which vcpkg
+        echo %VCPKG_ROOT%
+        echo %PATH%
+        where vcpkg
         vcpkg --version
-      shell: bash
+      shell: cmd
 
     - name: Build
       run: python3 scripts build
-      shell: bash
+      shell: cmd
 
     - name: Package
       run: |
