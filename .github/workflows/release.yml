@@ -37,8 +37,10 @@ jobs:
         git clone https://github.com/microsoft/vcpkg.git
         ./vcpkg/bootstrap-vcpkg.sh
 
+        echo $PATH
+
         _VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-        _PATH="$_VCPKG_ROOT:$PATH"
+        _PATH="${_VCPKG_ROOT}:$PATH"
 
         echo $_PATH
 
