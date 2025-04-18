@@ -76,13 +76,9 @@ jobs:
     - name: Environment Variables
       run: |
         VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-        _PATH="$VCPKG_ROOT:$PATH"
-
-        ls
 
         echo "
         VCPKG_ROOT=$VCPKG_ROOT
-        PATH=$_PATH
         " >> $GITHUB_ENV
       shell: bash
 
