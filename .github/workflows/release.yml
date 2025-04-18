@@ -96,9 +96,9 @@ jobs:
         python3 scripts/test.py
       shell: bash
 
-    #- name: Build
-    #  run: python3 scripts build
-    #  shell: cmd
+    - name: Build
+      run: python3 scripts build
+      shell: bash
 
     #- name: Package
     #  run: |
