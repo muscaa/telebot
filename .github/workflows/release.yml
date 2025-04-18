@@ -33,6 +33,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - uses: lukka/get-cmake@latest
+
       # Setup vcpkg: ensures vcpkg is downloaded and built.
       # Since vcpkg.json is being used later on to install the packages
       # when `run-cmake` runs, no packages are installed at this time
@@ -76,8 +78,6 @@ jobs:
         VCPKG_ROOT="${{ github.workspace }}/vcpkg"
         _PATH="$VCPKG_ROOT:$PATH"
 
-        ls $VCPKG_ROOT
-        echo "-----"
         ls
 
         echo "
@@ -96,9 +96,9 @@ jobs:
         python3 scripts/test.py
       shell: bash
 
-    - name: Build
-      run: python3 scripts build
-      shell: bash
+    #- name: Build
+    #  run: python3 scripts build
+    #  shell: bash
 
     #- name: Package
     #  run: |
