@@ -86,20 +86,14 @@ jobs:
         " >> $GITHUB_ENV
       shell: bash
 
-    - name: Test Environment Variables (cmd)
-      run: |
-        echo %VCPKG_ROOT%
-        echo %PATH%
-        where vcpkg
-        vcpkg --version
-      shell: cmd
-
-    - name: Test Environment Variables (bash)
+    - name: Test Environment Variables
       run: |
         echo $VCPKG_ROOT
         echo $PATH
         which vcpkg
         vcpkg --version
+
+        python3 scripts/test.py
       shell: bash
 
     #- name: Build
