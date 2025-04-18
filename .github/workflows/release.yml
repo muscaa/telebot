@@ -93,6 +93,12 @@ jobs:
         which vcpkg
         vcpkg --version
 
+        which cmake
+        cmake --version
+
+        which ninja
+        ninja --version
+
         python3 scripts/test.py
       shell: bash
 
