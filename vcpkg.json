@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "boost",
     "sdl3",
     "stb"
   ]
