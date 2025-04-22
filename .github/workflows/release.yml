@@ -44,11 +44,7 @@ jobs:
 
     - name: Environment Variables
       run: |
-        VCPKG_ROOT="${{ github.workspace }}/vcpkg"
-
-        echo "
-        VCPKG_ROOT=$VCPKG_ROOT
-        " >> $GITHUB_ENV
+        echo "VCPKG_ROOT=$VCPKG_ROOT"
       shell: bash
 
     - name: Build
