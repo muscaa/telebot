@@ -14,7 +14,6 @@ find_package(Boost REQUIRED COMPONENTS
 
 # Main
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
-file(GLOB_RECURSE MAIN_SOURCES "test.cpp")
 
 # ImGui
 file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
