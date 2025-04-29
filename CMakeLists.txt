@@ -8,12 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 # VCPKG packages
 find_package(SDL3 CONFIG REQUIRED)
 find_package(Stb REQUIRED)
-# find_package(Boost REQUIRED COMPONENTS
-#     system
-# )
+find_package(Boost REQUIRED COMPONENTS
+    system
+)
 
 # Main
-# file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
+file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
 file(GLOB_RECURSE MAIN_SOURCES "test.cpp")
 
 # ImGui
@@ -32,10 +32,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL3::SDL3
     ${Stb_INCLUDE_DIR}
-    # Boost::system
+    Boost::system
 )
 
 # Platform specific
-# if (WIN32)
-#     target_link_libraries(telebot PRIVATE ws2_32)
-# endif()
+if (WIN32)
+    target_link_libraries(telebot PRIVATE ws2_32)
+endif()
