@@ -59,6 +59,14 @@ jobs:
       run: python3 scripts build
       shell: bash
 
+    - name: Package
+      run: python3 scripts package
+      shell: bash
+
+    - name: ls
+      run: ls -la build
+      shell: bash
+
     #- name: Package
     #  run: |
     #    mkdir -p package
