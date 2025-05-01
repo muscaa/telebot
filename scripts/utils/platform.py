@@ -1,18 +1,22 @@
 import platform
 
+WINDOWS = "windows"
+LINUX = "linux"
+MACOS = "macos"
+
 _system = platform.system().lower()
 if _system == "windows":
-    SYSTEM = "windows"
+    SYSTEM = WINDOWS
     EXT = ".exe"
     LIB_EXT = ".dll"
     VCPKG_TRIPLET = "x64-windows-release"
 elif _system == "linux":
-    SYSTEM = "linux"
+    SYSTEM = LINUX
     EXT = ""
     LIB_EXT = ".so"
     VCPKG_TRIPLET = "x64-linux-release"
 elif _system == "darwin":
-    SYSTEM = "macos"
+    SYSTEM = MACOS
     EXT = ""
     LIB_EXT = ".dylib"
     VCPKG_TRIPLET = "x64-osx-release"

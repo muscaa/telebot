@@ -10,7 +10,8 @@ def package():
         zip.write(f"build/{config.PACKAGE_EXECUTABLE}{platform.EXT}", f"{config.PACKAGE_EXECUTABLE}{platform.EXT}")
         
         for lib in config.PACKAGE_LIBRARIES:
-            zip.write(f"build/{lib}{platform.LIB_EXT}", f"{lib}{platform.LIB_EXT}")
+            if platform.SYSTEM in lib.platforms:
+                zip.write(f"build/{lib.name}{platform.LIB_EXT}", f"{lib.name}{platform.LIB_EXT}")
 
         for file, name in config.PACKAGE_OTHER.items():
             zip.write(file, name)
