@@ -58,8 +58,8 @@ jobs:
     - name: Build
       run: python3 scripts build
 
-    - name: Package
-      run: python3 scripts package
+    #- name: Package
+    #  run: python3 scripts package
 
     - name: ls
       run: ls -la build
