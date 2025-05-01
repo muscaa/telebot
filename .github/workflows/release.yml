@@ -37,19 +37,16 @@ jobs:
       uses: lukka/get-cmake@latest
 
     - name: Setup VCPKG & install
-      uses: lukka/run-vcpkg@dev/cache-v4
-      with:
-        runVcpkgInstall: true
-        vcpkgJsonGlob: '**/vcpkg.json'
+      uses: lukka/run-vcpkg@v11
 
     - name: Environment Variables
       run: |
         echo "VCPKG_ROOT=$VCPKG_ROOT"
       shell: bash
 
-    - name: Build
-      run: python3 scripts build
-      shell: bash
+    # - name: Build
+    #   run: python3 scripts build
+    #   shell: bash
 
     #- name: Package
     #  run: |
