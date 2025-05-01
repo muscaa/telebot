@@ -1,11 +1,9 @@
 name: Cross Platform Release Build
 
 on:
-  release:
-    types: [ published ]
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -65,21 +63,9 @@ jobs:
       run: ls -la build
       shell: bash
 
-    #- name: Package
-    #  run: |
-    #    mkdir -p package
-    #    cp build/telebot${{ matrix.ext }} package/
-    #    
-    #    if [ "${{ matrix.platform }}" = "windows" ]; then
-    #      powershell -Command "Compress-Archive -Path package\\* -DestinationPath ${{ matrix.platform }}-${{ matrix.arch }}.zip"
-    #    else
-    #      zip -r ${{ matrix.platform }}-${{ matrix.arch }}.zip package
-    #    fi
-    #  shell: bash
-
-    #- name: Upload
-    #  uses: softprops/action-gh-release@v1
-    #  with:
-    #    files: ${{ matrix.platform }}-${{ matrix.arch }}.zip
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+        files: |
+          build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
