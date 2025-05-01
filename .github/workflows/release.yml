@@ -40,6 +40,8 @@ jobs:
           vcpkg/buildtrees
           vcpkg/installed
           vcpkg/packages
+          vcpkg_installed
+          build/vcpkg_installed
         key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ runner.os }}-
