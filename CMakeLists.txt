@@ -14,13 +14,13 @@ find_package(Stb REQUIRED)
 
 # Main
 # file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
-file(GLOB_RECURSE MAIN_SOURCES "test.cpp")
 
 # ImGui
 file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
 
 add_executable(${PROJECT_NAME}
-    ${MAIN_SOURCES}
+    #${MAIN_SOURCES}
+    "test.cpp"
     ${IMGUI_SOURCES}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
