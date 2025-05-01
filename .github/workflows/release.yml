@@ -33,6 +33,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Cache VCPKG
+      uses: actions/cache@v4
+      with:
+        path: vcpkg
+        key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
+        restore-keys: |
+          vcpkg-${{ runner.os }}-
+
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
 
@@ -42,6 +50,7 @@ jobs:
     - name: Environment Variables
       run: |
         echo "VCPKG_ROOT=$VCPKG_ROOT"
+        ls -la
       shell: bash
 
     # - name: Build
