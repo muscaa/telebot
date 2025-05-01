@@ -73,6 +73,6 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ github.sha }}
+        tag_name: build-${{ github.sha.substr(0, 8) }}-${{ github.run_number }}
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
