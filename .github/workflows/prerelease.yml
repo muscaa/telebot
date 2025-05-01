@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "v*.*.*"
 
 permissions:
   contents: write
@@ -61,10 +63,18 @@ jobs:
     - name: Package
       run: python3 scripts package
 
-    - name: Release
+    - name: Pre-Release
       uses: softprops/action-gh-release@v2
+      if: github.ref_type != 'tag'
       with:
         tag_name: build-${{ github.run_number }}
         prerelease: true
+        files: |
+          build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
