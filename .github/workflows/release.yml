@@ -46,10 +46,6 @@ jobs:
         key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ runner.os }}-
-    - name: Set Outputs
-      id: vars
-      run: |
-        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
@@ -77,6 +73,6 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: build-${{ steps.vars.outputs.sha_short }}-${{ github.run_number }}
+        tag_name: build-${{ github.run_number }}
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
