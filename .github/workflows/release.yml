@@ -66,13 +66,16 @@ jobs:
       run: |
         ls -la build
 
-        echo "${{ github.ref_type }}"
-        echo "${{ github.ref_name }}"
+        whereis gcc
+        whereis g++
+        whereis ninja
+        whereis cmake
       shell: bash
 
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: build-${{ github.run_number }}
+        prerelease: true
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
