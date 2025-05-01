@@ -1,0 +1,31 @@
+import platform
+
+_system = platform.system().lower()
+if _system == "windows":
+    SYSTEM = "windows"
+    EXT = ".exe"
+    LIB_EXT = ".dll"
+    VCPKG_TRIPLET = "x64-windows-release"
+elif _system == "linux":
+    SYSTEM = "linux"
+    EXT = ""
+    LIB_EXT = ".so"
+    VCPKG_TRIPLET = "x64-linux-release"
+elif _system == "darwin":
+    SYSTEM = "macos"
+    EXT = ""
+    LIB_EXT = ".dylib"
+    VCPKG_TRIPLET = "x64-osx-release"
+else:
+    SYSTEM = "unknown"
+    EXT = ".unknown"
+    LIB_EXT = ".unknown"
+    VCPKG_TRIPLET = "unknown"
+
+_arch = platform.machine().lower()
+if _arch in ("x86_64", "amd64"):
+    ARCH = "x86_64"
+elif _arch in ("arm64", "aarch64"):
+    ARCH = "arm64"
+else:
+    ARCH = "unknown"
