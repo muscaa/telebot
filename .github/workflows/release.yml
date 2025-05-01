@@ -43,6 +43,9 @@ jobs:
 
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
+      with:
+        useLocalCache: false
+        useCloudCache: false
 
     - name: Setup VCPKG & install
       uses: lukka/run-vcpkg@v11
