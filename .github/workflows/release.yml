@@ -36,7 +36,10 @@ jobs:
     - name: Cache VCPKG
       uses: actions/cache@v4
       with:
-        path: vcpkg
+        path: |
+          vcpkg/buildtrees
+          vcpkg/installed
+          vcpkg/packages
         key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ runner.os }}-
@@ -47,14 +50,8 @@ jobs:
         useLocalCache: false
         useCloudCache: false
 
-    - name: Setup VCPKG & install
+    - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
-
-    - name: Environment Variables
-      run: |
-        echo "VCPKG_ROOT=$VCPKG_ROOT"
-        ls -la
-      shell: bash
 
     - name: Build
       run: python3 scripts build
