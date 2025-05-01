@@ -59,8 +59,12 @@ jobs:
     - name: Package
       run: python3 scripts package
 
-    - name: ls
-      run: ls -la build
+    - name: Test
+      run: |
+        ls -la build
+
+        echo "${{ github.ref_type }}"
+        echo "${{ github.ref_name }}"
       shell: bash
 
     - name: Release
