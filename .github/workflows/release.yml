@@ -56,8 +56,6 @@ jobs:
       if: matrix.platform == 'macos'
       run: |
         xcode-select -p
-        xcode-select --install
-        xcode-select -p
         gcc --version
         brew list
         which gcc
