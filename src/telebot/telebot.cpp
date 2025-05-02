@@ -127,7 +127,7 @@ void run() {
 
         telebot::server::video::update(texture_video_stream);
         if (texture_video_stream != nullptr) {
-            SDL_FRect destRect = {0, 0, screen_width, screen_height};
+            SDL_FRect destRect = {0, 0, (float) screen_width, (float) screen_height};
             SDL_RenderTexture(renderer, texture_video_stream, nullptr, &destRect);
         }
 
