@@ -58,7 +58,7 @@ jobs:
         xcode-select -p
         gcc --version
 
-        sudo softwareupdate --all --install --force
+        softwareupdate --all --install
 
         xcode-select -p
         gcc --version
