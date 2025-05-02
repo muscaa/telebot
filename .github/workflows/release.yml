@@ -55,6 +55,10 @@ jobs:
     - name: Setup MacOS
       if: matrix.platform == 'macos'
       run: |
+        xcode-select -p
+        where gcc
+        brew list
+
         brew update
         brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline
     
