@@ -52,6 +52,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y autoconf automake autoconf-archive m4 libtool libltdl-dev libibus-1.0-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libx11-dev libxft-dev libxext-dev
 
+    - name: Setup MacOS
+      if: matrix.platform == 'macos'
+      run: |
+        brew update
+        brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline
+    
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
       with:
