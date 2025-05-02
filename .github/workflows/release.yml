@@ -61,7 +61,7 @@ jobs:
         which gcc
 
         brew update
-        brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline
+        brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline gettext
     
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
