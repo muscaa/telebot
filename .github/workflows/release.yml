@@ -56,8 +56,11 @@ jobs:
       if: matrix.platform == 'macos'
       run: |
         xcode-select -p
-        where gcc
+        xcode-select --install
+        xcode-select -p
+        gcc --version
         brew list
+        which gcc
 
         brew update
         brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline
