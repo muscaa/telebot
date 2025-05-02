@@ -8,7 +8,7 @@
             "binaryDir": "${sourceDir}/build/x64-windows-release",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_BUILD_TYPE": "release",
                 "VCPKG_TARGET_TRIPLET": "x64-windows-release"
             }
         },
@@ -19,7 +19,7 @@
             "binaryDir": "${sourceDir}/build/x64-linux-release",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_BUILD_TYPE": "release",
                 "VCPKG_TARGET_TRIPLET": "x64-linux-release"
             }
         },
@@ -30,7 +30,7 @@
             "binaryDir": "${sourceDir}/build/arm64-macos-release",
             "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_BUILD_TYPE": "release",
                 "VCPKG_TARGET_TRIPLET": "arm64-macos-release"
             }
         }
@@ -39,19 +39,19 @@
         {
             "name": "x64-windows-release",
             "configurePreset": "x64-windows-release",
-            "configuration": "Release",
+            "configuration": "release",
             "jobs": 16
         },
         {
             "name": "x64-linux-release",
             "configurePreset": "x64-linux-release",
-            "configuration": "Release",
+            "configuration": "release",
             "jobs": 16
         },
         {
             "name": "arm64-macos-release",
             "configurePreset": "arm64-macos-release",
-            "configuration": "Release",
+            "configuration": "release",
             "jobs": 16
         }
     ],
@@ -59,17 +59,17 @@
         {
             "name": "x64-windows-release",
             "configurePreset": "x64-windows-release",
-            "configuration": "Release"
+            "configuration": "release"
         },
         {
             "name": "x64-linux-release",
             "configurePreset": "x64-linux-release",
-            "configuration": "Release"
+            "configuration": "release"
         },
         {
             "name": "arm64-macos-release",
             "configurePreset": "arm64-macos-release",
-            "configuration": "Release"
+            "configuration": "release"
         }
     ]
 }
