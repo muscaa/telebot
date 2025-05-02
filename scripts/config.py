@@ -1,13 +1,13 @@
-from utils.library import Lib
+from utils.package import *
 from utils import platform
 
 NAME: str = "telebot"
 
-PACKAGE_EXECUTABLE: str = "telebot"
+PACKAGE_EXECUTABLE: Executable = Executable("telebot")
 PACKAGE_LIBRARIES: list[Lib] = [
-    Lib("SDL3", [platform.WINDOWS]),
+    Lib("SDL3", platforms=[platform.WINDOWS]),
 ]
-PACKAGE_OTHER: dict[str, str] = {
-    "LICENSE": "LICENSE",
-    "NOTICE": "NOTICE",
-}
+PACKAGE_OTHER: list[File] = [
+    File("LICENSE"),
+    File("NOTICE"),
+]

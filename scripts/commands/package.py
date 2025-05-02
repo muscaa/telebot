@@ -1,18 +1,21 @@
 import zipfile
 
 import config
-from utils import platform
+from utils import platform as p
+from utils import project
 
 def package():
-    print("Packaging...")
+    print(f"Packaging {project.get_package_zip_name()}...")
 
-    with zipfile.ZipFile(f"build/{config.NAME}-{platform.SYSTEM}-{platform.ARCH}.zip", "w", zipfile.ZIP_DEFLATED) as zip:
-        zip.write(f"build/{platform.ARCH}-{platform.SYSTEM}-release/{config.PACKAGE_EXECUTABLE}{platform.EXT}", f"{config.PACKAGE_EXECUTABLE}{platform.EXT}")
+    with zipfile.ZipFile(f"build/{project.get_package_zip_name()}", "w", zipfile.ZIP_DEFLATED) as zip:
+        if config.PACKAGE_EXECUTABLE.is_valid():
+            zip.write(f"build/{project.get_triplet()}/{config.PACKAGE_EXECUTABLE.get_path()}", config.PACKAGE_EXECUTABLE.get_path_to())
         
         for lib in config.PACKAGE_LIBRARIES:
-            if platform.SYSTEM in lib.platforms:
-                zip.write(f"build/{platform.ARCH}-{platform.SYSTEM}-release/{lib.name}{platform.LIB_EXT}", f"{lib.name}{platform.LIB_EXT}")
+            if lib.is_valid():
+                zip.write(f"build/{project.get_triplet()}/{lib.get_path()}", lib.get_path_to())
 
-        for file, name in config.PACKAGE_OTHER.items():
-            zip.write(file, name)
+        for file in config.PACKAGE_OTHER:
+            if file.is_valid():
+                zip.write(file.get_path(), file.get_path_to())
     
