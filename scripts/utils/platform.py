@@ -26,10 +26,13 @@ else:
     LIB_EXT = ".unknown"
     VCPKG_TRIPLET = "unknown"
 
+X64 = "x64"
+ARM64 = "arm64"
+
 _arch = platform.machine().lower()
 if _arch in ("x86_64", "amd64"):
-    ARCH = "x86_64"
+    ARCH = X64
 elif _arch in ("arm64", "aarch64"):
-    ARCH = "arm64"
+    ARCH = ARM64
 else:
     ARCH = "unknown"

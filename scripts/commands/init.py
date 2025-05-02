@@ -1,5 +1,7 @@
 import subprocess
 
+from utils import platform
+
 INITED = False
 
 def init():
@@ -9,7 +11,7 @@ def init():
         return
     INITED = True
 
-    print("Initializing...")
+    print(f"Initializing {platform.ARCH}-{platform.SYSTEM}-release...")
 
-    subprocess.run(["vcpkg", "install"])
+    subprocess.run(["vcpkg", "install", "--triplet", f"{platform.ARCH}-{platform.SYSTEM}-release"])
     

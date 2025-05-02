@@ -15,11 +15,11 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            arch: x86_64
+            arch: x64
             ext: ""
           - os: windows-latest
             platform: windows
-            arch: x86_64
+            arch: x64
             ext: ".exe"
           - os: macos-latest
             platform: macos

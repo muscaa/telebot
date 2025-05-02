@@ -13,5 +13,5 @@ def build():
     if os.path.exists(f"build/{config.PACKAGE_EXECUTABLE}{platform.EXT}"):
         os.remove(f"build/{config.PACKAGE_EXECUTABLE}{platform.EXT}")
 
-    subprocess.run(["cmake", "--preset", "default"])
-    subprocess.run(["cmake", "--build", "--preset", "release"])
+    subprocess.run(["cmake", "--preset", f"{platform.ARCH}-{platform.SYSTEM}-release"])
+    subprocess.run(["cmake", "--build", "--preset", f"{platform.ARCH}-{platform.SYSTEM}-release"])
