@@ -61,7 +61,10 @@ jobs:
         which gcc
 
         brew update
-        brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline gettext
+        brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline gettext gcc
+
+        echo "CC=gcc-14" >> $GITHUB_ENV
+        echo "CXX=g++-14" >> $GITHUB_ENV
     
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
