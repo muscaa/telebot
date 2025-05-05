@@ -17,14 +17,14 @@ jobs:
             platform: linux
             arch: x64
             ext: ""
-          - os: windows-latest
-            platform: windows
-            arch: x64
-            ext: ".exe"
-          - os: macos-latest
-            platform: macos
-            arch: arm64
-            ext: ""
+          #- os: windows-latest
+          #  platform: windows
+          #  arch: x64
+          #  ext: ".exe"
+          #- os: macos-latest
+          #  platform: macos
+          #  arch: arm64
+          #  ext: ""
 
     runs-on: ${{ matrix.os }}
     name: Build on ${{ matrix.platform }}-${{ matrix.arch }}
@@ -76,6 +76,18 @@ jobs:
 
     - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
+
+    - name: Test Tools
+      shell: bash
+      run: |
+        cmake --version
+        which cmake
+
+        ninja --version
+        which ninja
+
+        vcpkg --version
+        which vcpkg
 
     - name: Build
       run: python3 scripts build
