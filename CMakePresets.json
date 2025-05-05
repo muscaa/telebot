@@ -1,27 +1,74 @@
 {
-    "version": 2,
+    "version": 3,
     "configurePresets": [
         {
-            "name": "release",
+            "name": "x64-windows-release",
+            "displayName": "Windows x64 Release",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
+            "binaryDir": "${sourceDir}/build/x64-windows-release",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_BUILD_TYPE": "release",
+                "VCPKG_TARGET_TRIPLET": "x64-windows-release"
+            }
+        },
+        {
+            "name": "x64-linux-release",
+            "displayName": "Linux x64 Release",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/x64-linux-release",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_BUILD_TYPE": "release",
+                "VCPKG_TARGET_TRIPLET": "x64-linux-release"
+            }
+        },
+        {
+            "name": "arm64-macos-release",
+            "displayName": "MacOS arm64 Release",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/arm64-macos-release",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_BUILD_TYPE": "release",
+                "VCPKG_TARGET_TRIPLET": "arm64-macos-release"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "release",
-            "configurePreset": "release",
+            "name": "x64-windows-release",
+            "configurePreset": "x64-windows-release",
+            "configuration": "release",
+            "jobs": 16
+        },
+        {
+            "name": "x64-linux-release",
+            "configurePreset": "x64-linux-release",
+            "configuration": "release",
+            "jobs": 16
+        },
+        {
+            "name": "arm64-macos-release",
+            "configurePreset": "arm64-macos-release",
             "configuration": "release",
             "jobs": 16
         }
     ],
     "testPresets": [
         {
-            "name": "release",
-            "configurePreset": "release",
+            "name": "x64-windows-release",
+            "configurePreset": "x64-windows-release",
+            "configuration": "release"
+        },
+        {
+            "name": "x64-linux-release",
+            "configurePreset": "x64-linux-release",
+            "configuration": "release"
+        },
+        {
+            "name": "arm64-macos-release",
+            "configurePreset": "arm64-macos-release",
             "configuration": "release"
         }
     ]

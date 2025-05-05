@@ -1,5 +1,7 @@
 import subprocess
 
+from utils import project
+
 INITED = False
 
 def init():
@@ -9,7 +11,7 @@ def init():
         return
     INITED = True
 
-    print(f"Initializing...")
+    print(f"Initializing {project.get_triplet()}...")
 
-    subprocess.run(["vcpkg", "install"])
+    subprocess.run(["vcpkg", "install", "--triplet", f"{project.get_triplet()}"])
     
