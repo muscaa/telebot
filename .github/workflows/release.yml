@@ -13,14 +13,14 @@ jobs:
     strategy:
       matrix:
         include:
-          #- os: ubuntu-latest
-          #  platform: linux
-          #  arch: x64
-          #  ext: ""
-          #- os: windows-latest
-          #  platform: windows
-          #  arch: x64
-          #  ext: ".exe"
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            ext: ""
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            ext: ".exe"
           - os: macos-latest
             platform: macos
             arch: arm64
@@ -55,9 +55,6 @@ jobs:
     - name: Setup MacOS
       if: matrix.platform == 'macos'
       run: |
-        xcode-select -p
-        gcc --version
-
         brew update
         brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline gettext
     
@@ -71,18 +68,6 @@ jobs:
 
     - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
-
-    - name: Test Tools
-      shell: bash
-      run: |
-        cmake --version
-        which cmake
-
-        ninja --version
-        which ninja
-
-        vcpkg --version
-        which vcpkg
 
     - name: Build
       run: python3 scripts build
