@@ -50,7 +50,7 @@ jobs:
       if: matrix.platform == 'linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf automake autoconf-archive m4 libtool libltdl-dev libibus-1.0-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libx11-dev libxft-dev libxext-dev uuid-dev
+        sudo apt-get install -y autoconf automake autoconf-archive m4 libtool libltdl-dev libibus-1.0-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libx11-dev libxft-dev libxext-dev
 
     - name: Setup MacOS
       if: matrix.platform == 'macos'
@@ -73,6 +73,8 @@ jobs:
       with:
         useLocalCache: false
         useCloudCache: false
+        cmakeVersion: "~3.25.0"
+        ninjaVersion: "^1.11.1"
 
     - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
