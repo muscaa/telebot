@@ -13,5 +13,5 @@ def init():
 
     print(f"Initializing {project.get_triplet()}...")
 
-    subprocess.run(["vcpkg", "install", "--triplet", f"{project.get_triplet()}"])
+    # subprocess.run(["vcpkg", "install", "--triplet", f"{project.get_triplet()}"])
     

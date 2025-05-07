@@ -14,6 +14,7 @@ find_package(SDL3 CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
     system
+    dll
 )
 
 # Sources
@@ -34,6 +35,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     SDL3::SDL3
     ${Stb_INCLUDE_DIR}
     Boost::system
+    Boost::dll
 )
 
 # Platform specific
