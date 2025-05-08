@@ -15,7 +15,9 @@ find_package(Stb REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
     system
     dll
+    json
 )
+find_package(libzippp CONFIG REQUIRED)
 
 # Sources
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
@@ -36,6 +38,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${Stb_INCLUDE_DIR}
     Boost::system
     Boost::dll
+    Boost::json
+    libzippp::libzippp
 )
 
 # Platform specific

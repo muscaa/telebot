@@ -1,7 +1,8 @@
 {
   "dependencies": [
+    "boost",
     "sdl3",
     "stb",
-    "boost"
+    "libzippp"
   ]
 }

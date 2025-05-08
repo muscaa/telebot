@@ -8,6 +8,7 @@
 #include "telebot/utils/texture.h"
 #include "telebot/server/video.h"
 #include "telebot/render/imgui.h"
+#include "telebot/plugins.h"
 
 namespace telebot {
 
