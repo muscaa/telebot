@@ -2,6 +2,8 @@ name: Cross Platform Release Build
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "v*.*.*"
 
@@ -27,6 +29,7 @@ jobs:
             ext: ""
 
     runs-on: ${{ matrix.os }}
+    if: github.ref_type == 'tag'
     name: Build on ${{ matrix.platform }}-${{ matrix.arch }}
 
     steps:
@@ -51,6 +54,10 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y autoconf automake autoconf-archive m4 libtool libltdl-dev libibus-1.0-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libx11-dev libxft-dev libxext-dev
+
+    - name: Setup Windows
+      if: matrix.platform == 'windows'
+      uses: egor-tensin/vs-shell@v2
 
     - name: Setup MacOS
       if: matrix.platform == 'macos'
@@ -81,3 +88,26 @@ jobs:
       with:
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+
+    - name: Pre-Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type != 'tag'
+      with:
+        tag_name: build-${{ github.run_id }}
+        prerelease: true
+        files: |
+          build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+
+  test:
+    runs-on: windows-latest
+    name: Test
+
+    steps:
+      - name: Setup Windows
+        uses: egor-tensin/vs-shell@v2
+
+      - name: Check Tools
+        shell: cmd
+        run: |
+          where vcpkg
+          echo %VCPKG_ROOT%

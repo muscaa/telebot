@@ -5,9 +5,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_CXX_STANDARD 17)
 
-if (WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")
-endif()
+# if (WIN32)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static -static-libgcc -static-libstdc++")
+# endif()
 
 # VCPKG packages
 find_package(SDL3 CONFIG REQUIRED)
@@ -40,5 +40,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 # Platform specific
 if (WIN32)
-    target_link_libraries(telebot PRIVATE ws2_32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
 endif()
