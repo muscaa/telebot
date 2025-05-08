@@ -1,5 +1,28 @@
 #include "telebot/plugins.h"
 
+#include <boost/dll.hpp>
+#include <boost/json.hpp>
+#include <libzippp.h>
+
+#include "telebot/utils/files.h"
+
 namespace telebot::plugins {
+
+Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
+    this->path = sub_path ? telebot::utils::files::PLUGINS_DIR / plugin_path : plugin_path;
+    
+    libzippp::ZipArchive zip(path.string());
+    zip.open(libzippp::ZipArchive::ReadOnly);
+
+    libzippp::ZipEntry plugin_json_entry = zip.getEntry("plugin.json");
+    boost::json::object plugin_json = boost::json::parse(plugin_json_entry.readAsText()).as_object();
+
+    this->name = plugin_json["name"].as_string();
+    this->version = plugin_json["version"].as_string();
+
+    // extract platform specific library
+    
+    zip.close();
+}
 
 } // namespace telebot::plugins

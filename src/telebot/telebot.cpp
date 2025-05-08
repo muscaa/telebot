@@ -9,6 +9,7 @@
 #include "telebot/server/video.h"
 #include "telebot/render/imgui.h"
 #include "telebot/plugins.h"
+#include "telebot/utils/files.h"
 
 namespace telebot {
 
@@ -77,6 +78,8 @@ bool init() {
 
     texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
     telebot::server::video::start(4444, 32, 128000);
+
+    telebot::utils::files::init();
 
     return true;
 }
