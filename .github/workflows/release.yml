@@ -92,7 +92,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: github.ref_type != 'tag'
       with:
-        tag_name: build-${{ github.run_id }}
+        tag_name: build-${{ github.run_number }}
         prerelease: true
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
