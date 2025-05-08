@@ -15,21 +15,20 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
-            ext: ""
+          #- os: ubuntu-latest
+          #  platform: linux
+          #  arch: x64
+          #  ext: ""
           - os: windows-latest
             platform: windows
             arch: x64
             ext: ".exe"
-          - os: macos-latest
-            platform: macos
-            arch: arm64
-            ext: ""
+          #- os: macos-latest
+          #  platform: macos
+          #  arch: arm64
+          #  ext: ""
 
     runs-on: ${{ matrix.os }}
-    if: github.ref_type == 'tag'
     name: Build on ${{ matrix.platform }}-${{ matrix.arch }}
 
     steps:
@@ -65,6 +64,13 @@ jobs:
         brew update
         brew install autoconf automake autoconf-archive m4 intltool libtool pkgconf gtk-doc readline gettext
     
+    - name: Pre Tools
+      shell: cmd
+      run: |
+        where vcpkg
+        echo %VCPKG_ROOT%
+        echo %LIBPATH%
+
     - name: Setup CMake & Ninja
       uses: lukka/get-cmake@latest
       with:
@@ -76,46 +82,31 @@ jobs:
     - name: Setup VCPKG
       uses: lukka/run-vcpkg@v11
 
-    - name: Build
-      run: python3 scripts build
+    #- name: Build
+    #  run: python3 scripts build
 
-    - name: Package
-      run: python3 scripts package
+    - name: Post Tools
+      shell: cmd
+      run: |
+        where vcpkg
+        echo %VCPKG_ROOT%
+        echo %LIBPATH%
 
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      if: github.ref_type == 'tag'
-      with:
-        files: |
-          build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+    #- name: Package
+    #  run: python3 scripts package
 
-    - name: Pre-Release
-      uses: softprops/action-gh-release@v2
-      if: github.ref_type != 'tag'
-      with:
-        tag_name: build-${{ github.run_id }}
-        prerelease: true
-        files: |
-          build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+    #- name: Release
+    #  uses: softprops/action-gh-release@v2
+    #  if: github.ref_type == 'tag'
+    #  with:
+    #    files: |
+    #      build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
 
-  test:
-    runs-on: windows-latest
-    name: Test
-
-    steps:
-      - name: Pre Tools
-        shell: cmd
-        run: |
-          where vcpkg
-          echo %VCPKG_ROOT%
-          echo %LIBPATH%
-
-      - name: Setup Windows
-        uses: egor-tensin/vs-shell@v2
-
-      - name: Post Tools
-        shell: cmd
-        run: |
-          where vcpkg
-          echo %VCPKG_ROOT%
-          echo %LIBPATH%
+    #- name: Pre-Release
+    #  uses: softprops/action-gh-release@v2
+    #  if: github.ref_type != 'tag'
+    #  with:
+    #    tag_name: build-${{ github.run_id }}
+    #    prerelease: true
+    #    files: |
+    #      build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
