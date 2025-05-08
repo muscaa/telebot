@@ -103,11 +103,19 @@ jobs:
     name: Test
 
     steps:
-      - name: Setup Windows
-        uses: egor-tensin/vs-shell@v2
-
-      - name: Check Tools
+      - name: Pre Tools
         shell: cmd
         run: |
           where vcpkg
           echo %VCPKG_ROOT%
+          echo %LIBPATH%
+
+      - name: Setup Windows
+        uses: egor-tensin/vs-shell@v2
+
+      - name: Post Tools
+        shell: cmd
+        run: |
+          where vcpkg
+          echo %VCPKG_ROOT%
+          echo %LIBPATH%
