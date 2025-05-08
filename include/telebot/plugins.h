@@ -9,6 +9,7 @@ class Plugin {
    private:
     boost::filesystem::path path;
     std::string name;
+    std::string author;
     std::string version;
 
    public:
