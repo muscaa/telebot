@@ -3,16 +3,22 @@
 #include <boost/dll.hpp>
 #include <boost/json.hpp>
 #include <libzippp.h>
-#include <SDL3/SDL.h>
 
 #include "telebot/utils/files.h"
+#include "telebot/utils/logging.h"
 
 namespace telebot::plugins {
 
+namespace log = telebot::utils::logging;
+
 Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
-    SDL_Log("Loading plugin: %s", plugin_path.c_str());
+    log::info("Loading plugin: {}", "mata");
 
     this->path = sub_path ? telebot::utils::files::PLUGINS_DIR / plugin_path : plugin_path;
+
+    if (!boost::filesystem::exists(path)) {
+        log::warn("Plugin {} does not exist!", plugin_path.string());
+    }
     
     libzippp::ZipArchive zip(path.string());
     zip.open(libzippp::ZipArchive::ReadOnly);
@@ -24,7 +30,7 @@ Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
     this->author = plugin_json["author"].as_string();
     this->version = plugin_json["version"].as_string();
 
-    SDL_Log("%s v%s (%s)", name.c_str(), version.c_str(), author.c_str());
+    log::info("{} v{} ({})", name, version, author);
 
     // extract platform specific library
     
