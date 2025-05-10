@@ -10,6 +10,7 @@
 #include "telebot/render/imgui.h"
 #include "telebot/plugins.h"
 #include "telebot/utils/files.h"
+#include "telebot/utils/platform.h"
 
 namespace telebot {
 
@@ -80,6 +81,7 @@ bool init() {
     telebot::server::video::start(4444, 32, 128000);
 
     telebot::utils::files::init();
+    telebot::utils::platform::init();
 
     telebot::plugins::Plugin plugin("telebot-template-plugin.zip");
 

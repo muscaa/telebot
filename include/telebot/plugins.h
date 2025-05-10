@@ -11,6 +11,9 @@ class Plugin {
     std::string name;
     std::string author;
     std::string version;
+    std::string plugin_lib;
+    std::string plugin_main;
+    boost::filesystem::path temp_dir;
 
    public:
     Plugin(const boost::filesystem::path& plugin_path, bool sub_path = true);
