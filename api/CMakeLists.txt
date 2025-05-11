@@ -1,0 +1,37 @@
+# VCPKG packages
+find_package(SDL3 CONFIG REQUIRED)
+find_package(Stb REQUIRED)
+find_package(libzippp CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS
+    system
+    dll
+    json
+)
+
+# Sources
+file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
+file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
+
+add_library(${TELEBOT_API} SHARED
+    ${MAIN_SOURCES}
+    ${IMGUI_SOURCES}
+)
+target_include_directories(${TELEBOT_API} PUBLIC
+    include
+    lib/imgui
+)
+
+# VCPKG links
+target_link_libraries(${TELEBOT_API} PUBLIC
+    SDL3::SDL3
+    ${Stb_INCLUDE_DIR}
+    libzippp::libzippp
+    Boost::system
+    Boost::dll
+    Boost::json
+)
+
+# Platform specific
+if (WIN32)
+    target_link_libraries(${TELEBOT_API} PRIVATE ws2_32)
+endif()
