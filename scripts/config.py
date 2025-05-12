@@ -11,7 +11,7 @@ PACKAGE_OTHER: list[File] = [
     File("NOTICE"),
 ]
 
-PACKAGE_SDK_INCLUDE: list[str] = [
+SDK_INCLUDE: list[str] = [
     "api/",
     "app/",
     "vcpkg_triplets/",

@@ -8,3 +8,6 @@ def get_triplet() -> str:
 
 def get_package_zip_name() -> str:
     return f"{config.NAME}-{p.SYSTEM}-{p.ARCH}.zip"
+
+def get_sdk_zip_name() -> str:
+    return f"{config.NAME}-sdk.zip"
