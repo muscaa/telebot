@@ -4,6 +4,7 @@ find_package(Stb REQUIRED)
 find_package(libzippp CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
     system
+    filesystem
     dll
     json
 )
@@ -30,6 +31,7 @@ target_link_libraries(${TELEBOT_API} PUBLIC
     ${Stb_INCLUDE_DIR}
     libzippp::libzippp
     Boost::system
+    Boost::filesystem
     Boost::dll
     Boost::json
 )
