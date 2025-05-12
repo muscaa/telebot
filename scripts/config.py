@@ -11,11 +11,13 @@ PACKAGE_OTHER: list[File] = [
     File("NOTICE"),
 ]
 
-SDK_INCLUDE: list[str] = [
-    "api/",
-    "app/",
-    "vcpkg_triplets/",
-    "CMakePresets.json",
-    "vcpkg-configuration.json",
-    "vcpkg.json",
+SDK_INCLUDE: list[File] = [
+    File("api/"),
+    File("app/"),
+    File("vcpkg_triplets/"),
+    File("CMakePresets.json"),
+    File("LICENSE"),
+    File("NOTICE"),
+    File("vcpkg-configuration.json"),
+    File("vcpkg.json"),
 ]

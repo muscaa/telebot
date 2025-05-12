@@ -14,9 +14,11 @@ def sdk():
                 src = os.path.normpath(os.path.join(root, file))
 
                 for include in config.SDK_INCLUDE:
-                    if src.startswith(include):
-                        zip.write(src, src)
-                        added_files[src] = src
+                    if src.startswith(os.path.normpath(include.get_path())):
+                        if include.is_valid():
+                            dst = os.path.normpath(os.path.join(include.get_path_to(), os.path.relpath(src, include.get_path())))
+                            zip.write(src, dst)
+                            added_files[src] = dst
                         break
 
     for src, dst in added_files.items():
