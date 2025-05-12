@@ -5,7 +5,7 @@ import config
 from utils import project
 
 def sdk():
-    print(f"Generating {project.get_sdk_zip_name()}...")
+    print(f"Packaging {project.get_sdk_zip_name()}...")
 
     added_files = {}
     with zipfile.ZipFile(f"build/{project.get_sdk_zip_name()}", "w", zipfile.ZIP_DEFLATED) as zip:
