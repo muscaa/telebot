@@ -7,8 +7,11 @@ from utils import project
 def sdk():
     print(f"Packaging {project.get_sdk_zip_name()}...")
 
+    zip_file = f"build/{project.get_sdk_zip_name()}"
+    os.makedirs(os.path.dirname(zip_file), exist_ok=True)
+
     added_files = {}
-    with zipfile.ZipFile(f"build/{project.get_sdk_zip_name()}", "w", zipfile.ZIP_DEFLATED) as zip:
+    with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as zip:
         for root, _, files in os.walk("."):
             for file in files:
                 src = os.path.normpath(os.path.join(root, file))

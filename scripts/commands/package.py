@@ -7,9 +7,12 @@ from utils import project
 def package():
     print(f"Packaging {project.get_package_zip_name()}...")
 
+    zip_file = f"build/{project.get_sdk_zip_name()}"
+    os.makedirs(os.path.dirname(zip_file), exist_ok=True)
+
     added_files = {}
     build_dir = f"build/{project.get_triplet()}/{project.CONFIGURATION}"
-    with zipfile.ZipFile(f"build/{project.get_package_zip_name()}", "w", zipfile.ZIP_DEFLATED) as zip:
+    with zipfile.ZipFile(zip_file, "w", zipfile.ZIP_DEFLATED) as zip:
         if config.PACKAGE_EXECUTABLE.is_valid():
             src = os.path.join(build_dir, config.PACKAGE_EXECUTABLE.get_path())
             dst = config.PACKAGE_EXECUTABLE.get_path_to()

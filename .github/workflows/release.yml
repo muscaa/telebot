@@ -94,3 +94,30 @@ jobs:
         prerelease: true
         files: |
           build/telebot-${{ matrix.platform }}-${{ matrix.arch }}.zip
+
+  sdk:
+    runs-on: ubuntu-latest
+    name: SDK
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Package
+      run: python3 scripts sdk
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type == 'tag'
+      with:
+        files: |
+          build/telebot-sdk.zip
+
+    - name: Pre-Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref_type != 'tag'
+      with:
+        tag_name: build-${{ github.run_number }}
+        prerelease: true
+        files: |
+          build/telebot-sdk.zip
