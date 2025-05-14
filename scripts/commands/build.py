@@ -2,12 +2,9 @@ import subprocess
 import os
 
 import config
-from commands import init
 from utils import project
 
 def build():
-    init.init()
-
     print("Building...")
 
     if os.path.exists(f"build/{project.get_triplet()}/{project.CONFIGURATION}/{config.PACKAGE_EXECUTABLE.get_path()}"):

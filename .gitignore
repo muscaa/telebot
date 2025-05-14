@@ -2,11 +2,11 @@
 .vscode/
 
 # CMake
-build/
-CMakeUserPresets.json
+/build/
+/CMakeUserPresets.json
 
 # VCPkg
-vcpkg_installed/
+/vcpkg_installed/
 
 # Python
 __pycache__/

@@ -7,8 +7,4 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
-set(TELEBOT_API "telebot-api")
-set(TELEBOT_APP "telebot")
-
-add_subdirectory(api)
-add_subdirectory(app)
+include(sdk/subdirs.cmake)
