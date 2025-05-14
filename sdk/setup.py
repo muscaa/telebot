@@ -16,7 +16,7 @@ def already_exists(root: str, to_move: list[str]) -> bool:
     return False
 
 def move_files(root: str):
-    to_move = ["vcpkg_triplets/", "CmakePresets.json", "vcpkg-configuration.json", "vcpkg.json"]
+    to_move = ["vcpkg_triplets/", "CMakePresets.json", "vcpkg-configuration.json", "vcpkg.json"]
     exists = already_exists(root, to_move)
 
     if exists:

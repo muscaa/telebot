@@ -17,6 +17,7 @@ SDK_INCLUDE: list[File] = [
     File("vcpkg_triplets/"),
     File("sdk/CMakeLists.txt", "CMakeLists.txt"),
     File("sdk/include.cmake", "include.cmake"),
+    File("sdk/packages.cmake", "packages.cmake"),
     File("sdk/subdirs.cmake", "subdirs.cmake"),
     File("sdk/setup.py", "setup.py"),
     File("CMakePresets.json"),
