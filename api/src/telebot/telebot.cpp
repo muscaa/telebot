@@ -83,7 +83,7 @@ bool init() {
     telebot::utils::files::init();
     telebot::utils::platform::init();
 
-    telebot::plugins::Plugin plugin("telebot-template-plugin.zip");
+    telebot::plugins::Plugin* plugin = telebot::plugins::load("telebot-template-plugin.zip");
 
     return true;
 }

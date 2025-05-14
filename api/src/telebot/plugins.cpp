@@ -15,14 +15,15 @@ namespace telebot::plugins {
 
 namespace log = telebot::utils::logging;
 
-Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
-    log::info("Loading {}...", plugin_path.string());
+std::map<std::string, Plugin*> loaded_plugins;
 
-    this->path = sub_path ? telebot::utils::files::PLUGINS_DIR / plugin_path : plugin_path;
+Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
+    log::info("Loading {}...", zip_path.string());
 
+    boost::filesystem::path path = sub_path ? telebot::utils::files::PLUGINS_DIR / zip_path : zip_path;
     if (!boost::filesystem::exists(path)) {
-        log::warn("Plugin {} does not exist!", plugin_path.string());
-        return;
+        log::warn("Plugin {} does not exist!", zip_path.string());
+        return nullptr;
     }
     
     libzippp::ZipArchive zip(path.string());
@@ -31,18 +32,20 @@ Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
     libzippp::ZipEntry plugin_json_entry = zip.getEntry("plugin.json");
     boost::json::object plugin_json = boost::json::parse(plugin_json_entry.readAsText()).as_object();
 
-    this->id = plugin_json["id"].as_string();
-    this->name = plugin_json["name"].as_string();
-    this->author = plugin_json["author"].as_string();
-    this->version = plugin_json["version"].as_string();
-    this->description = plugin_json["description"].as_string();
-    this->plugin_lib = plugin_json["plugin_lib"].as_string();
-    this->plugin_main = plugin_json["plugin_main"].as_string();
+    // no id ? return nullptr
 
-    log::info("{} v{} ({})", name, version, author);
+    std::string id = std::string(plugin_json["id"].as_string());
+    std::string name = std::string(plugin_json["name"].as_string());
+    std::string author = std::string(plugin_json["author"].as_string());
+    std::string version = std::string(plugin_json["version"].as_string());
+    std::string description = std::string(plugin_json["description"].as_string());
+    std::string plugin_lib = std::string(plugin_json["plugin_lib"].as_string());
+    std::string plugin_main = std::string(plugin_json["plugin_main"].as_string());
 
-    this->dir = telebot::utils::files::dir(telebot::utils::files::PLUGINS_DIR / id);
-    this->temp_dir = telebot::utils::files::dir(telebot::utils::files::TEMP_DIR / id);
+    // check id for duplicates
+
+    boost::filesystem::path dir = telebot::utils::files::dir(telebot::utils::files::PLUGINS_DIR / id);
+    boost::filesystem::path temp_dir = telebot::utils::files::dir(telebot::utils::files::TEMP_DIR / id);
 
     for (libzippp::ZipEntry entry : zip.getEntries()) {
         if (entry.isDirectory()) {
@@ -65,7 +68,6 @@ Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
                     std::string arch = system_arch.substr(dash_pos + 1);
 
                     if (system != telebot::utils::platform::SYSTEM || arch != telebot::utils::platform::ARCH) {
-                        log::debug("Skipping {} for {}-{}", entry.getName(), system, arch);
                         continue;
                     }
 
@@ -78,15 +80,17 @@ Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
         std::ofstream out(extract_path.string(), std::ios::binary);
         out.write(static_cast<const char*>(entry.readAsBinary()), entry.getSize());
         out.close();
-        
-        log::debug("Extracted {} to {}", entry.getName(), extract_path.string());
     }
     
     zip.close();
 
-    boost::dll::experimental::smart_library lib(temp_dir / (plugin_lib + telebot::utils::platform::LIB_EXT));
-    boost::function<void()> main = lib.get_function<void()>(plugin_main);
+    boost::dll::experimental::smart_library* lib = new boost::dll::experimental::smart_library(temp_dir / (plugin_lib + telebot::utils::platform::LIB_EXT));
+    boost::function<void()> main = lib->get_function<void()>(plugin_main);
     main();
+
+    Plugin* plugin = new Plugin(id, name, author, version, description, plugin_lib, plugin_main, path, dir, temp_dir, lib);
+    loaded_plugins[id] = plugin;
+    return plugin;
 }
 
 } // namespace telebot::plugins
