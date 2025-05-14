@@ -15,6 +15,8 @@ SDK_INCLUDE: list[File] = [
     File("api/"),
     File("app/"),
     File("vcpkg_triplets/"),
+    File("sdk/setup.py", "setup.py"),
+    File("sdk/CMakeLists.txt", "CMakeLists.txt"),
     File("CMakePresets.json"),
     File("LICENSE"),
     File("NOTICE"),
