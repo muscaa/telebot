@@ -31,15 +31,18 @@ Plugin::Plugin(const boost::filesystem::path& plugin_path, bool sub_path) {
     libzippp::ZipEntry plugin_json_entry = zip.getEntry("plugin.json");
     boost::json::object plugin_json = boost::json::parse(plugin_json_entry.readAsText()).as_object();
 
+    this->id = plugin_json["id"].as_string();
     this->name = plugin_json["name"].as_string();
     this->author = plugin_json["author"].as_string();
     this->version = plugin_json["version"].as_string();
+    this->description = plugin_json["description"].as_string();
     this->plugin_lib = plugin_json["plugin_lib"].as_string();
     this->plugin_main = plugin_json["plugin_main"].as_string();
 
     log::info("{} v{} ({})", name, version, author);
 
-    this->temp_dir = telebot::utils::files::dir(telebot::utils::files::TEMP_DIR / plugin_path.filename());
+    this->dir = telebot::utils::files::dir(telebot::utils::files::PLUGINS_DIR / id);
+    this->temp_dir = telebot::utils::files::dir(telebot::utils::files::TEMP_DIR / id);
 
     for (libzippp::ZipEntry entry : zip.getEntries()) {
         if (entry.isDirectory()) {
