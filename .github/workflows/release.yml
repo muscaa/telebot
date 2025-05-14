@@ -42,6 +42,7 @@ jobs:
           vcpkg/buildtrees
           vcpkg/installed
           vcpkg/packages
+          build/${{ matrix.arch }}-${{ matrix.platform }}-release/vcpkg_installed
         key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ runner.os }}-
