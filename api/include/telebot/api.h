@@ -2,8 +2,11 @@
 
 #include <boost/config.hpp>
 
-#if defined(TELEBOT_API_EXPORTS)
-  #define API BOOST_SYMBOL_EXPORT
+#define EXPORT BOOST_SYMBOL_EXPORT
+#define IMPORT BOOST_SYMBOL_IMPORT
+
+#if defined(API_EXPORT)
+  #define API EXPORT
 #else
-  #define API BOOST_SYMBOL_IMPORT
+  #define API IMPORT
 #endif

@@ -14,7 +14,7 @@ target_include_directories(${TELEBOT_API} PUBLIC
     lib/imgui/include
 )
 target_compile_definitions(${TELEBOT_API} PRIVATE
-    TELEBOT_API_EXPORTS
+    API_EXPORT
 )
 
 # VCPKG links
