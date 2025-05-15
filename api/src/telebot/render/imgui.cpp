@@ -9,7 +9,7 @@
 namespace telebot::render::imgui {
 
 static void window_plugins() {
-    ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     if (!ImGui::Begin("Plugins")) {
         ImGui::End();
         return;
