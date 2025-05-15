@@ -6,4 +6,5 @@ find_package(Boost REQUIRED COMPONENTS
     system
     dll
     json
+    signals2
 )

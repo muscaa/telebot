@@ -22,6 +22,7 @@ target_link_libraries(${TELEBOT_API} PUBLIC
     Boost::system
     Boost::dll
     Boost::json
+    Boost::signals2
 )
 
 # Platform specific

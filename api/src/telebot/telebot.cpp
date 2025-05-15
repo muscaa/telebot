@@ -11,13 +11,18 @@
 #include "telebot/plugins.h"
 #include "telebot/utils/files.h"
 #include "telebot/utils/platform.h"
+#include "telebot/events.h"
+#include "telebot/utils/logging.h"
 
 namespace telebot {
+
+namespace log = telebot::utils::logging;
 
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 ImGuiIO* io = nullptr;
-SDL_Texture* texture_video_stream = nullptr;
+//SDL_Texture* texture_video_stream = nullptr;
+std::map<SDL_Scancode, bool> key_states;
 
 bool running;
 int screen_width;
@@ -77,13 +82,25 @@ bool init() {
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
     //IM_ASSERT(font != nullptr);
 
-    texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
-    telebot::server::video::start(4444, 32, 128000);
+    /*texture_video_stream = telebot::utils::texture::create_texture_streaming(renderer, 1280, 720); // 1280x720 - default size of the video stream for now
+    telebot::server::video::start(4444, 32, 128000);*/
 
     telebot::utils::files::init();
     telebot::utils::platform::init();
 
-    telebot::plugins::Plugin* plugin = telebot::plugins::load("telebot-template-plugin.zip");
+    for (boost::filesystem::directory_iterator it(telebot::utils::files::PLUGINS_DIR); it != boost::filesystem::directory_iterator {}; it++) {
+        boost::filesystem::directory_entry& entry = *it;
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+
+        boost::filesystem::path path = entry.path().filename();
+        if (path.extension() != ".zip") {
+            continue;
+        }
+
+        telebot::plugins::load(path);
+    }
 
     return true;
 }
@@ -93,6 +110,8 @@ void run() {
 
     // Main loop
     while (running) {
+        telebot::events::tick();
+
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -106,9 +125,22 @@ void run() {
             if ((event.type == SDL_EVENT_QUIT) 
                 || (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED
                     && event.window.windowID == SDL_GetWindowID(window))
-                //||
                 ) {
                 running = false;
+            } else if (event.type == SDL_EVENT_KEY_DOWN) {
+                bool old_value = key_states[event.key.scancode];
+                bool new_value = !io->WantCaptureKeyboard;
+
+                if (!old_value && new_value) {
+                    key_states[event.key.scancode] = true;
+                    telebot::events::key_down(event.key.scancode, event.key.repeat);
+                } else if (old_value && !new_value) {
+                    key_states[event.key.scancode] = false;
+                    telebot::events::key_up(event.key.scancode);
+                }
+            } else if(event.type == SDL_EVENT_KEY_UP) {
+                key_states[event.key.scancode] = false;
+                telebot::events::key_up(event.key.scancode);
             }
         }
 
@@ -117,6 +149,8 @@ void run() {
             SDL_Delay(10);
             continue;
         }
+
+        telebot::events::pre_render();
 
         SDL_GetWindowSizeInPixels(window, &screen_width, &screen_height);
 
@@ -133,13 +167,18 @@ void run() {
         SDL_SetRenderDrawColorFloat(renderer, 100.0F / 255.0F, 110.0F / 255.0F, 120.0F / 255.0F, 1.0F);
         SDL_RenderClear(renderer);
 
-        telebot::server::video::update(texture_video_stream);
+        telebot::events::render();
+
+        /*telebot::server::video::update(texture_video_stream);
         if (texture_video_stream != nullptr) {
             SDL_FRect destRect = {0, 0, (float) screen_width, (float) screen_height};
             SDL_RenderTexture(renderer, texture_video_stream, nullptr, &destRect);
-        }
+        }*/
 
         ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+
+        telebot::events::post_render();
+
         SDL_RenderPresent(renderer);
     }
 }
@@ -147,7 +186,7 @@ void run() {
 void dispose() {
     running = false;
 
-    telebot::server::video::stop();
+    //telebot::server::video::stop();
 
     // Cleanup
     // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]

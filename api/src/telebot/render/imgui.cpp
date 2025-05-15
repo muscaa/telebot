@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include "telebot/telebot.h"
+#include "telebot/events.h"
 
 namespace telebot::render::imgui {
 
@@ -11,6 +12,8 @@ static bool show_another_window = false;
 static ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 void build() {
+    telebot::events::pre_imgui_build();
+
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
     if (show_demo_window) {
         ImGui::ShowDemoWindow(&show_demo_window);
@@ -49,6 +52,8 @@ void build() {
         }
         ImGui::End();
     }
+
+    telebot::events::post_imgui_build();
 }
 
 } // namespace telebot::render::imgui
