@@ -4,7 +4,7 @@
 #include <boost/dll/smart_library.hpp>
 #include <boost/json.hpp>
 #include <boost/function.hpp>
-#include <libzippp.h>
+#include <libzippp/libzippp.h>
 #include <fstream>
 
 #include "telebot/utils/files.h"
@@ -32,17 +32,33 @@ Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
     libzippp::ZipEntry plugin_json_entry = zip.getEntry("plugin.json");
     boost::json::object plugin_json = boost::json::parse(plugin_json_entry.readAsText()).as_object();
 
-    // no id ? return nullptr
+    if (!plugin_json.contains("id")) {
+        log::warn("{} doesnt have an id!", zip_path.string());
+        return nullptr;
+    }
+
+    if (!plugin_json.contains("plugin_lib")) {
+        log::warn("{} doesnt have a plugin_lib!", zip_path.string());
+        return nullptr;
+    }
+
+    if (!plugin_json.contains("plugin_main")) {
+        log::warn("{} doesnt have a plugin_main!", zip_path.string());
+        return nullptr;
+    }
 
     std::string id = std::string(plugin_json["id"].as_string());
-    std::string name = std::string(plugin_json["name"].as_string());
-    std::string author = std::string(plugin_json["author"].as_string());
-    std::string version = std::string(plugin_json["version"].as_string());
-    std::string description = std::string(plugin_json["description"].as_string());
+    std::string name = plugin_json.contains("name") ? std::string(plugin_json["name"].as_string()) : id;
+    std::string author = plugin_json.contains("author") ? std::string(plugin_json["author"].as_string()) : "unknown";
+    std::string version = plugin_json.contains("version") ? std::string(plugin_json["version"].as_string()) : "unknown";
+    std::string description = plugin_json.contains("description") ? std::string(plugin_json["description"].as_string()) : "No description.";
     std::string plugin_lib = std::string(plugin_json["plugin_lib"].as_string());
     std::string plugin_main = std::string(plugin_json["plugin_main"].as_string());
 
-    // check id for duplicates
+    if (loaded_plugins.find(id) != loaded_plugins.end()) {
+        log::warn("Plugin {} with id {} is already loaded!", zip_path.string(), id);
+        return nullptr;
+    }
 
     boost::filesystem::path dir = telebot::utils::files::dir(telebot::utils::files::PLUGINS_DIR / id);
     boost::filesystem::path temp_dir = telebot::utils::files::dir(telebot::utils::files::TEMP_DIR / id);
