@@ -85,11 +85,13 @@ Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
     zip.close();
 
     boost::dll::experimental::smart_library* lib = new boost::dll::experimental::smart_library(temp_dir / (plugin_lib + telebot::utils::platform::LIB_EXT));
-    boost::function<void()> main = lib->get_function<void()>(plugin_main);
-    main();
+    boost::function<void (const telebot::plugins::Plugin&)> main = lib->get_function<void (const telebot::plugins::Plugin&)>(plugin_main);
 
     Plugin* plugin = new Plugin(id, name, author, version, description, plugin_lib, plugin_main, path, dir, temp_dir, lib);
     loaded_plugins[id] = plugin;
+
+    main(*plugin);
+
     return plugin;
 }
 
