@@ -1,6 +1,6 @@
 # Sources
 file(GLOB_RECURSE MAIN_SOURCES "src/*.cpp")
-file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/*.cpp")
+file(GLOB_RECURSE IMGUI_SOURCES "lib/imgui/src/*.cpp")
 
 add_library(${TELEBOT_API} SHARED
     ${MAIN_SOURCES}
@@ -11,7 +11,7 @@ set_target_properties(${TELEBOT_API} PROPERTIES
 )
 target_include_directories(${TELEBOT_API} PUBLIC
     include
-    lib/imgui
+    lib/imgui/include
 )
 
 # VCPKG links
