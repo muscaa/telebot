@@ -5,6 +5,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll/smart_library.hpp>
 
+#include "telebot/api.h"
+
 namespace telebot::plugins {
 
 class Plugin {
@@ -71,7 +73,7 @@ class Plugin {
     const std::string& getPluginMain() const { return plugin_main; }
 };
 
-extern std::map<std::string, Plugin*> loaded_plugins;
+extern API std::map<std::string, Plugin*> loaded_plugins;
 
 Plugin* load(const boost::filesystem::path& zip_path, bool sub_path = true);
 

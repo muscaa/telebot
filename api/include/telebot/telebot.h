@@ -4,19 +4,21 @@
 #include <imgui.h>
 #include <map>
 
+#include "telebot/api.h"
+
 namespace telebot {
 
 // init()
-extern SDL_Window* window;
-extern SDL_Renderer* renderer;
-extern ImGuiIO* io;
+extern API SDL_Window* window;
+extern API SDL_Renderer* renderer;
+extern API ImGuiIO* io;
 //extern SDL_Texture* texture_video_stream;
-extern std::map<SDL_Scancode, bool> key_states;
+extern API std::map<SDL_Scancode, bool> key_states;
 
 // run()
-extern bool running;
-extern int screen_width;
-extern int screen_height;
+extern API bool running;
+extern API int screen_width;
+extern API int screen_height;
 
 bool init();
 

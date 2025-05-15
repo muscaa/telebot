@@ -2,11 +2,13 @@
 
 #include <boost/filesystem.hpp>
 
+#include "telebot/api.h"
+
 namespace telebot::utils::files {
 
-extern const boost::filesystem::path ROOT_DIR;
-extern const boost::filesystem::path PLUGINS_DIR;
-extern const boost::filesystem::path TEMP_DIR;
+extern API const boost::filesystem::path ROOT_DIR;
+extern API const boost::filesystem::path PLUGINS_DIR;
+extern API const boost::filesystem::path TEMP_DIR;
 
 void init();
 
