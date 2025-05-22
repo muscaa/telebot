@@ -9,27 +9,29 @@
 class TcpServer : private TcpConnection::Observer {
    public:
     struct Observer {
-        virtual void onConnectionAccepted(int connectionId);
-        virtual void onReceived(int connectionId, const char *data, size_t size);
-        virtual void onConnectionClosed(int connectionId);
+        virtual void onConnectionAccepted(const TcpServer& server, int connectionId);
+        virtual void onReceived(const TcpServer& server, int connectionId, const char* data, size_t size);
+        virtual void onConnectionClosed(const TcpServer& server, int connectionId);
     };
 
-    TcpServer(boost::asio::io_context &ioContext, Observer &observer);
+    TcpServer(const Observer& observer);
 
-    bool listen(const boost::asio::ip::tcp &protocol, uint16_t port);
+    bool listen(const boost::asio::ip::tcp& protocol, uint16_t port);
     void startAcceptingConnections();
-    void send(int connectionId, const char *data, size_t size);
+    void send(int connectionId, const char* data, size_t size);
     void close();
     bool isRunning() const { return m_acceptor.is_open(); }
 
    private:
     void doAccept();
-    void onReceived(int connectionId, const char *data, size_t size) override;
+    void onReceived(int connectionId, const char* data, size_t size) override;
     void onConnectionClosed(int connectionId) override;
 
+    boost::asio::io_context m_ioContext;
+    std::thread m_thread;
     boost::asio::ip::tcp::acceptor m_acceptor;
     std::unordered_map<int, std::shared_ptr<TcpConnection>> m_connections;
-    Observer &m_observer;
+    Observer m_observer;
     int m_connectionCount;
     bool m_isAccepting;
     bool m_isClosing;

@@ -3,17 +3,19 @@
 #include <iostream>
 #include <string>
 
-void TcpServer::Observer::onConnectionAccepted(
-    [[maybe_unused]] int connectionId) {}
+void TcpServer::Observer::onConnectionAccepted(const TcpServer& server, [[maybe_unused]] int connectionId) {}
 
-void TcpServer::Observer::onReceived([[maybe_unused]] int connectionId,
+void TcpServer::Observer::onReceived(const TcpServer& server,
+                                     [[maybe_unused]] int connectionId,
                                      [[maybe_unused]] const char *data,
                                      [[maybe_unused]] const size_t size) {}
 
-void TcpServer::Observer::onConnectionClosed([[maybe_unused]] int connectionId) {}
+void TcpServer::Observer::onConnectionClosed(const TcpServer& server, [[maybe_unused]] int connectionId) {}
 
-TcpServer::TcpServer(boost::asio::io_context &ioContext, Observer &observer)
-    : m_acceptor{ioContext},
+TcpServer::TcpServer(const Observer& observer)
+    : m_ioContext(),
+      m_thread([this]() { m_ioContext.run(); }),
+      m_acceptor(m_ioContext),
       m_connections{},
       m_observer{observer},
       m_connectionCount{0},
@@ -70,7 +72,7 @@ void TcpServer::doAccept() {
             connection->startReading();
             m_connections.insert({m_connectionCount, std::move(connection)});
             std::cout << "TCPServer accepted connection.\n";
-            m_observer.onConnectionAccepted(m_connectionCount);
+            m_observer.onConnectionAccepted(*this, m_connectionCount);
             m_connectionCount++;
         }
         doAccept();
@@ -78,7 +80,7 @@ void TcpServer::doAccept() {
 }
 
 void TcpServer::onReceived(int connectionId, const char *data, size_t size) {
-    m_observer.onReceived(connectionId, data, size);
+    m_observer.onReceived(*this, connectionId, data, size);
 }
 
 void TcpServer::onConnectionClosed(int connectionId) {
@@ -87,6 +89,6 @@ void TcpServer::onConnectionClosed(int connectionId) {
     }
     if (m_connections.erase(connectionId) > 0) {
         std::cout << "TCPServer removed connection.\n";
-        m_observer.onConnectionClosed(connectionId);
+        m_observer.onConnectionClosed(*this, connectionId);
     }
 }
