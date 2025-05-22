@@ -20,6 +20,7 @@ class TcpServer : private TcpConnection::Observer {
     void startAcceptingConnections();
     void send(int connectionId, const char *data, size_t size);
     void close();
+    bool isRunning() const { return m_acceptor.is_open(); }
 
    private:
     void doAccept();

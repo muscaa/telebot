@@ -17,6 +17,7 @@ class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
     void startReading();
     void send(const char *data, size_t size);
     void close();
+    bool isOpen() const { return m_socket.is_open(); }
 
    private:
     TcpConnection(boost::asio::ip::tcp::socket &&socket, Observer &observer, int id);

@@ -19,6 +19,7 @@ class TcpClient : private TcpConnection::Observer {
     void connect(const boost::asio::ip::tcp::endpoint &endpoint);
     void send(const char *data, size_t size);
     void disconnect();
+    bool isConnected() const { return m_connection->isOpen(); }
 
    private:
     void onReceived(int connectionId, const char *data, size_t size) override;
