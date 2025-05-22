@@ -7,7 +7,7 @@ from utils import project
 def package():
     print(f"Packaging {project.get_package_zip_name()}...")
 
-    zip_file = f"build/{project.get_sdk_zip_name()}"
+    zip_file = f"build/{project.get_package_zip_name()}"
     os.makedirs(os.path.dirname(zip_file), exist_ok=True)
 
     added_files = {}
