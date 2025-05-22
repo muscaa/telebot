@@ -6,6 +6,7 @@ boost::signals2::signal<void ()> tick;
 boost::signals2::signal<void (SDL_Scancode code, bool repeat)> key_down;
 boost::signals2::signal<void (SDL_Scancode code)> key_up;
 boost::signals2::signal<void ()> pre_imgui_build;
+boost::signals2::signal<void (const telebot::plugins::Plugin&)> imgui_plugin;
 boost::signals2::signal<void ()> post_imgui_build;
 boost::signals2::signal<void ()> pre_render;
 boost::signals2::signal<void ()> render;

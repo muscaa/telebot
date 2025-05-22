@@ -22,6 +22,8 @@ static void window_plugins() {
             ImGui::Text("Version: %s", plugin->getVersion().c_str());
             ImGui::SeparatorText("Description");
             ImGui::Text("%s", plugin->getDescription().c_str());
+
+            telebot::events::imgui_plugin(*plugin);
         }
     }
 
