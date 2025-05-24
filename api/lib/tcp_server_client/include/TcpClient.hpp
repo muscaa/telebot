@@ -9,9 +9,9 @@
 class TcpClient : private TcpConnection::Observer {
    public:
     struct Observer {
-        virtual void onConnected(const TcpClient& client);
-        virtual void onReceived(const TcpClient& client, const char* data, size_t size);
-        virtual void onDisconnected(const TcpClient& client);
+        virtual void onConnected(TcpClient* client);
+        virtual void onReceived(TcpClient* client, const char* data, size_t size);
+        virtual void onDisconnected(TcpClient* client);
     };
 
     TcpClient(const Observer& observer);

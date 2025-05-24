@@ -4,15 +4,15 @@ namespace telebot::utils::stun {
 
 TcpServer* server(int port) {
     struct : TcpServer::Observer {
-        void onConnectionAccepted(const TcpServer& server, int connectionId) {
+        void onConnectionAccepted(TcpServer* server, int connectionId) {
 
         }
 
-        void onReceived(const TcpServer& server, int connectionId, const char* data, size_t size) {
+        void onReceived(TcpServer* server, int connectionId, const char* data, size_t size) {
 
         }
         
-        void onConnectionClosed(const TcpServer& server, int connectionId) {
+        void onConnectionClosed(TcpServer* server, int connectionId) {
 
         }
     } observer;
@@ -26,15 +26,15 @@ TcpServer* server(int port) {
 
 TcpClient* client(std::string address, int port) {
     struct : TcpClient::Observer {
-        void onConnected(const TcpClient& client) {
+        void onConnected(TcpClient* client) {
 
         }
 
-        void onReceived(const TcpClient& client, const char* data, size_t size) {
+        void onReceived(TcpClient* client, const char* data, size_t size) {
 
         }
         
-        void onDisconnected(const TcpClient& client) {
+        void onDisconnected(TcpClient* client) {
 
         }
     } observer;

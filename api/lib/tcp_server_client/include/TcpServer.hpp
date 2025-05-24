@@ -9,9 +9,9 @@
 class TcpServer : private TcpConnection::Observer {
    public:
     struct Observer {
-        virtual void onConnectionAccepted(const TcpServer& server, int connectionId);
-        virtual void onReceived(const TcpServer& server, int connectionId, const char* data, size_t size);
-        virtual void onConnectionClosed(const TcpServer& server, int connectionId);
+        virtual void onConnectionAccepted(TcpServer* server, int connectionId);
+        virtual void onReceived(TcpServer* server, int connectionId, const char* data, size_t size);
+        virtual void onConnectionClosed(TcpServer* server, int connectionId);
     };
 
     TcpServer(const Observer& observer);
@@ -21,6 +21,7 @@ class TcpServer : private TcpConnection::Observer {
     void send(int connectionId, const char* data, size_t size);
     void close();
     bool isRunning() const { return m_acceptor.is_open(); }
+    std::unordered_map<int, std::shared_ptr<TcpConnection>>& getConnections() { return m_connections; }
 
    private:
     void doAccept();
