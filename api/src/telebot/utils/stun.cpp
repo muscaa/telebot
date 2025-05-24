@@ -1,22 +1,40 @@
 #include "telebot/utils/stun.h"
 
-#include <vector>
+#include "telebot/utils/binary.h"
+#include <iostream>
 
 namespace telebot::utils::stun {
 
-static void send_clients(TcpServer* server) {
-    std::vector<uint8_t> response;
+namespace bin = telebot::utils::binary;
+
+static void write_clients(TcpServer* server) {
+    uint8_t data[1024];
+    size_t offset = 0;
+
+    bin::Int(data, static_cast<int32_t>(server->getConnections().size()), offset);
     for (const auto& [id, connection] : server->getConnections()) {
-        response.push_back(id);
+        bin::Int(data, id, offset);
     }
 
-    server->sendAll(response.data(), response.size());
+    server->sendAll(data, offset);
+}
+
+static void read_clients(TcpClient* client, const uint8_t* data) {
+    size_t offset = 0;
+
+    int clients = bin::Int(data, offset);
+    for (int i = 0; i < clients; i++) {
+        int id = bin::Int(data, offset);
+
+        std::cout << id << ", ";
+    }
+    std::cout << std::endl;
 }
 
 TcpServer* server(int port) {
     struct : TcpServer::Observer {
         void onConnectionAccepted(TcpServer* server, int id) {
-            send_clients(server);
+            write_clients(server);
         }
 
         void onReceived(TcpServer* server, int id, const uint8_t* data, size_t size) {
@@ -24,7 +42,7 @@ TcpServer* server(int port) {
         }
         
         void onConnectionClosed(TcpServer* server, int id) {
-            send_clients(server);
+            write_clients(server);
         }
     } observer;
 
@@ -42,7 +60,7 @@ TcpClient* client(std::string address, int port) {
         }
 
         void onReceived(TcpClient* client, const uint8_t* data, size_t size) {
-
+            read_clients(client, data);
         }
         
         void onDisconnected(TcpClient* client) {
