@@ -49,6 +49,12 @@ void TcpServer::send(int connectionId, const uint8_t* data, size_t size) {
     m_connections.at(connectionId)->send(data, size);
 }
 
+void TcpServer::sendAll(const uint8_t* data, size_t size) {
+    for (const auto& [id, connection] : m_connections) {
+        connection->send(data, size);
+    }
+}
+
 void TcpServer::close() {
     m_isClosing = true;
     m_acceptor.cancel();

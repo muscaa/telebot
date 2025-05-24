@@ -19,6 +19,7 @@ class TcpServer : private TcpConnection::Observer {
     bool listen(const boost::asio::ip::tcp& protocol, uint16_t port);
     void startAcceptingConnections();
     void send(int id, const uint8_t* data, size_t size);
+    void sendAll(const uint8_t* data, size_t size);
     void close();
     bool isRunning() const { return m_acceptor.is_open(); }
     std::unordered_map<int, std::shared_ptr<TcpConnection>>& getConnections() { return m_connections; }
