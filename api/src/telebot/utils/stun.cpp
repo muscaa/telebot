@@ -8,7 +8,7 @@ TcpServer* server(int port) {
 
         }
 
-        void onReceived(TcpServer* server, int id, const char* data, size_t size) {
+        void onReceived(TcpServer* server, int id, const uint8_t* data, size_t size) {
 
         }
         
@@ -30,7 +30,7 @@ TcpClient* client(std::string address, int port) {
 
         }
 
-        void onReceived(TcpClient* client, const char* data, size_t size) {
+        void onReceived(TcpClient* client, const uint8_t* data, size_t size) {
 
         }
         

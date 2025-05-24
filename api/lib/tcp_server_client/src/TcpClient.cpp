@@ -5,7 +5,7 @@
 void TcpClient::Observer::onConnected(TcpClient* client) {}
 
 void TcpClient::Observer::onReceived(TcpClient* client,
-                                     [[maybe_unused]] const char *data,
+                                     [[maybe_unused]] const uint8_t* data,
                                      [[maybe_unused]] size_t size) {}
 
 void TcpClient::Observer::onDisconnected(TcpClient* client) {}
@@ -31,7 +31,7 @@ void TcpClient::connect(const boost::asio::ip::tcp::endpoint &endpoint) {
     });
 }
 
-void TcpClient::send(const char *data, size_t size) {
+void TcpClient::send(const uint8_t* data, size_t size) {
     if (!m_connection) {
         std::cerr << "TcpClient::send() error: no connection.\n";
         return;
@@ -45,7 +45,7 @@ void TcpClient::disconnect() {
     }
 }
 
-void TcpClient::onReceived([[maybe_unused]] int connectionId, const char *data, size_t size) {
+void TcpClient::onReceived([[maybe_unused]] int connectionId, const uint8_t* data, size_t size) {
     m_observer.onReceived(this, data, size);
 }
 

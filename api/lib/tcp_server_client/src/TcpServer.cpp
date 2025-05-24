@@ -7,7 +7,7 @@ void TcpServer::Observer::onConnectionAccepted(TcpServer* server, [[maybe_unused
 
 void TcpServer::Observer::onReceived(TcpServer* server,
                                      [[maybe_unused]] int connectionId,
-                                     [[maybe_unused]] const char *data,
+                                     [[maybe_unused]] const uint8_t* data,
                                      [[maybe_unused]] const size_t size) {}
 
 void TcpServer::Observer::onConnectionClosed(TcpServer* server, [[maybe_unused]] int connectionId) {}
@@ -41,7 +41,7 @@ void TcpServer::startAcceptingConnections() {
     }
 }
 
-void TcpServer::send(int connectionId, const char *data, size_t size) {
+void TcpServer::send(int connectionId, const uint8_t* data, size_t size) {
     if (m_connections.count(connectionId) == 0) {
         std::cerr << "TcpServer::send() error: connection not found.\n";
         return;
@@ -79,7 +79,7 @@ void TcpServer::doAccept() {
     });
 }
 
-void TcpServer::onReceived(int connectionId, const char *data, size_t size) {
+void TcpServer::onReceived(int connectionId, const uint8_t* data, size_t size) {
     m_observer.onReceived(this, connectionId, data, size);
 }
 

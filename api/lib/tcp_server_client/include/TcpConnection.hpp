@@ -8,19 +8,19 @@
 class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
    public:
     struct Observer {
-        virtual void onReceived(int connectionId, const char *data, size_t size);
-        virtual void onConnectionClosed(int connectionId);
+        virtual void onReceived(int id, const uint8_t* data, size_t size);
+        virtual void onConnectionClosed(int id);
     };
 
-    static std::shared_ptr<TcpConnection> create(boost::asio::ip::tcp::socket &&socket, Observer &observer, int id = 0);
+    static std::shared_ptr<TcpConnection> create(boost::asio::ip::tcp::socket&& socket, Observer& observer, int id = 0);
 
     void startReading();
-    void send(const char *data, size_t size);
+    void send(const uint8_t* data, size_t size);
     void close();
     bool isOpen() const { return m_socket.is_open(); }
 
    private:
-    TcpConnection(boost::asio::ip::tcp::socket &&socket, Observer &observer, int id);
+    TcpConnection(boost::asio::ip::tcp::socket&& socket, Observer& observer, int id);
     void doRead();
     void doWrite();
 

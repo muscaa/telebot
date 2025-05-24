@@ -10,20 +10,20 @@ class TcpClient : private TcpConnection::Observer {
    public:
     struct Observer {
         virtual void onConnected(TcpClient* client);
-        virtual void onReceived(TcpClient* client, const char* data, size_t size);
+        virtual void onReceived(TcpClient* client, const uint8_t* data, size_t size);
         virtual void onDisconnected(TcpClient* client);
     };
 
     TcpClient(const Observer& observer);
 
     void connect(const boost::asio::ip::tcp::endpoint& endpoint);
-    void send(const char* data, size_t size);
+    void send(const uint8_t* data, size_t size);
     void disconnect();
     bool isConnected() const { return m_connection->isOpen(); }
 
    private:
-    void onReceived(int connectionId, const char* data, size_t size) override;
-    void onConnectionClosed(int connectionId) override;
+    void onReceived(int id, const uint8_t* data, size_t size) override;
+    void onConnectionClosed(int id) override;
 
     boost::asio::io_context m_ioContext;
     std::thread m_thread;

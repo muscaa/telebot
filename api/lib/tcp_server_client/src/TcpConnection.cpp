@@ -7,7 +7,7 @@ constexpr auto f_readBufferSize{1024};
 }  // namespace
 
 void TcpConnection::Observer::onReceived([[maybe_unused]] int connectionId,
-                                         [[maybe_unused]] const char *data,
+                                         [[maybe_unused]] const uint8_t* data,
                                          [[maybe_unused]] const size_t size) {}
 
 void TcpConnection::Observer::onConnectionClosed(
@@ -33,10 +33,10 @@ void TcpConnection::startReading() {
     }
 }
 
-void TcpConnection::send(const char *data, size_t size) {
+void TcpConnection::send(const uint8_t* data, size_t size) {
     std::lock_guard<std::mutex> guard{m_writeBufferMutex};
     std::ostream bufferStream{&m_writeBuffer};
-    bufferStream.write(data, size);
+    bufferStream.write((const char*) data, size);
     if (!m_isWritting) {
         doWrite();
     }
@@ -63,7 +63,7 @@ void TcpConnection::doRead() {
             return close();
         }
         m_readBuffer.commit(bytesTransferred);
-        m_observer.onReceived(m_id, static_cast<const char *>(m_readBuffer.data().data()), bytesTransferred);
+        m_observer.onReceived(m_id, static_cast<const uint8_t*>(m_readBuffer.data().data()), bytesTransferred);
         m_readBuffer.consume(bytesTransferred);
         doRead();
     });
