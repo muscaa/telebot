@@ -1,11 +1,22 @@
 #include "telebot/utils/stun.h"
 
+#include <vector>
+
 namespace telebot::utils::stun {
+
+static void send_clients(TcpServer* server) {
+    std::vector<uint8_t> response;
+    for (const auto& [id, connection] : server->getConnections()) {
+        response.push_back(id);
+    }
+
+    server->sendAll(response.data(), response.size());
+}
 
 TcpServer* server(int port) {
     struct : TcpServer::Observer {
         void onConnectionAccepted(TcpServer* server, int id) {
-
+            send_clients(server);
         }
 
         void onReceived(TcpServer* server, int id, const uint8_t* data, size_t size) {
@@ -13,7 +24,7 @@ TcpServer* server(int port) {
         }
         
         void onConnectionClosed(TcpServer* server, int id) {
-
+            send_clients(server);
         }
     } observer;
 
