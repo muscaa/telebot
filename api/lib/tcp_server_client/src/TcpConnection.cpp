@@ -36,7 +36,7 @@ void TcpConnection::startReading() {
 void TcpConnection::send(const uint8_t* data, size_t size) {
     std::lock_guard<std::mutex> guard{m_writeBufferMutex};
     std::ostream bufferStream{&m_writeBuffer};
-    bufferStream.write((const char*) data, size);
+    bufferStream.write(reinterpret_cast<const char*>(data), size);
     if (!m_isWritting) {
         doWrite();
     }
