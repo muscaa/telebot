@@ -1,6 +1,6 @@
 #include "telebot/utils/binary.h"
 
-#include <memory>
+#include <cstring>
 
 namespace telebot::utils::binary {
 
@@ -74,48 +74,57 @@ std::string LenString(const uint8_t* data, size_t& offset) {
 
 // writing
 
-void Bool(uint8_t* data, bool value, size_t offset) {
+void Bool(uint8_t* data, size_t& offset, bool value) {
     std::memcpy(data + offset, &value, sizeof(bool));
+    offset += sizeof(bool);
 }
 
-void Byte(uint8_t* data, uint8_t value, size_t offset) {
+void Byte(uint8_t* data, size_t& offset, uint8_t value) {
     data[offset] = value;
+    offset += sizeof(uint8_t);
 }
 
-void Char(uint8_t* data, char value, size_t offset) {
+void Char(uint8_t* data, size_t& offset, char value) {
     std::memcpy(data + offset, &value, sizeof(char));
+    offset += sizeof(char);
 }
 
-void Short(uint8_t* data, int16_t value, size_t offset) {
+void Short(uint8_t* data, size_t& offset, int16_t value) {
     std::memcpy(data + offset, &value, sizeof(int16_t));
+    offset += sizeof(int16_t);
 }
 
-void Int(uint8_t* data, int32_t value, size_t offset) {
+void Int(uint8_t* data, size_t& offset, int32_t value) {
     std::memcpy(data + offset, &value, sizeof(int32_t));
+    offset += sizeof(int32_t);
 }
 
-void Float(uint8_t* data, float value, size_t offset) {
+void Float(uint8_t* data, size_t& offset, float value) {
     std::memcpy(data + offset, &value, sizeof(float));
+    offset += sizeof(float);
 }
 
-void Long(uint8_t* data, int64_t value, size_t offset) {
+void Long(uint8_t* data, size_t& offset, int64_t value) {
     std::memcpy(data + offset, &value, sizeof(int64_t));
+    offset += sizeof(int64_t);
 }
 
-void Double(uint8_t* data, double value, size_t offset) {
+void Double(uint8_t* data, size_t& offset, double value) {
     std::memcpy(data + offset, &value, sizeof(double));
+    offset += sizeof(double);
 }
 
-void String(uint8_t* data, std::string value, size_t length, size_t offset) {
+void String(uint8_t* data, size_t& offset, std::string value, size_t length) {
     std::memcpy(data + offset, value.data(), std::min(length, value.size()));
     if (value.size() < length) {
         std::memset(data + offset + value.size(), 0, length - value.size());
     }
+    offset += length;
 }
 
-void LenString(uint8_t* data, std::string value, size_t offset) {
-    Int(data, static_cast<int32_t>(value.size()), offset);
-    String(data, value, value.size(), offset + sizeof(int32_t));
+void LenString(uint8_t* data, size_t& offset, std::string value) {
+    Int(data, offset, static_cast<int32_t>(value.size()));
+    String(data, offset, value, value.size());
 }
 
 } // namespace telebot::utils::binary

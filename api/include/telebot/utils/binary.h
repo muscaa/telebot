@@ -29,24 +29,24 @@ std::string LenString(const uint8_t* data, size_t& offset);
 
 // writing
 
-void Bool(uint8_t* data, bool value, size_t offset = 0);
+void Bool(uint8_t* data, size_t& offset, bool value);
 
-void Byte(uint8_t* data, uint8_t value, size_t offset = 0);
+void Byte(uint8_t* data, size_t& offset, uint8_t value);
 
-void Char(uint8_t* data, char value, size_t offset = 0);
+void Char(uint8_t* data, size_t& offset, char value);
 
-void Short(uint8_t* data, int16_t value, size_t offset = 0);
+void Short(uint8_t* data, size_t& offset, int16_t value);
 
-void Int(uint8_t* data, int32_t value, size_t offset = 0);
+void Int(uint8_t* data, size_t& offset, int32_t value);
 
-void Float(uint8_t* data, float value, size_t offset = 0);
+void Float(uint8_t* data, size_t& offset, float value);
 
-void Long(uint8_t* data, int64_t value, size_t offset = 0);
+void Long(uint8_t* data, size_t& offset, int64_t value);
 
-void Double(uint8_t* data, double value, size_t offset = 0);
+void Double(uint8_t* data, size_t& offset, double value);
 
-void String(uint8_t* data, std::string value, size_t length, size_t offset = 0);
+void String(uint8_t* data, size_t& offset, std::string value, size_t length);
 
-void LenString(uint8_t* data, std::string value, size_t offset = 0);
+void LenString(uint8_t* data, size_t& offset, std::string value);
 
 } // namespace telebot::utils::binary

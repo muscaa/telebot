@@ -14,7 +14,7 @@ class TcpServer : private TcpConnection::Observer {
         virtual void onConnectionClosed(TcpServer* server, int id);
     };
 
-    TcpServer(const Observer& observer);
+    TcpServer(Observer* observer);
 
     bool listen(const boost::asio::ip::tcp& protocol, uint16_t port);
     void startAcceptingConnections();
@@ -33,7 +33,7 @@ class TcpServer : private TcpConnection::Observer {
     std::thread m_thread;
     boost::asio::ip::tcp::acceptor m_acceptor;
     std::unordered_map<int, std::shared_ptr<TcpConnection>> m_connections;
-    Observer m_observer;
+    Observer* m_observer;
     int m_connectionCount;
     bool m_isAccepting;
     bool m_isClosing;

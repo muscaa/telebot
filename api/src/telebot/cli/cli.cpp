@@ -22,7 +22,7 @@ int main(const std::vector<std::string>& args) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     } else if (args[1] == "client") {
-        TcpClient* client = telebot::utils::stun::client("127.0.0.1", 1234);
+        TcpClient* client = telebot::utils::stun::client("127.0.0.1", 1234, args[2]);
 
         while (client->isConnected()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));

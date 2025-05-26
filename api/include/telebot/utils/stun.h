@@ -8,6 +8,6 @@ namespace telebot::utils::stun {
 
 TcpServer* server(int port);
 
-TcpClient* client(std::string address, int port);
+TcpClient* client(std::string address, int port, std::string name);
 
 } // namespace telebot::utils::stun

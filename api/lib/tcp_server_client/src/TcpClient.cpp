@@ -10,24 +10,27 @@ void TcpClient::Observer::onReceived(TcpClient* client,
 
 void TcpClient::Observer::onDisconnected(TcpClient* client) {}
 
-TcpClient::TcpClient(const Observer& observer)
+TcpClient::TcpClient(Observer* observer)
     : m_ioContext(), m_thread([this]() { m_ioContext.run(); }), m_connection{}, m_observer{observer} {}
 
 void TcpClient::connect(const boost::asio::ip::tcp::endpoint &endpoint) {
     if (m_connection) {
         return;
     }
+    connecting = true;
     auto socket = std::make_shared<boost::asio::ip::tcp::socket>(m_ioContext);
     socket->async_connect(endpoint, [this, socket](const auto &error) {
         if (error) {
             std::cerr << "TcpClient::connect() error: " + error.message() + ".\n";
-            m_observer.onDisconnected(this);
+            connecting = false;
+            m_observer->onDisconnected(this);
             return;
         }
         m_connection = TcpConnection::create(std::move(*socket), *this);
         m_connection->startReading();
         std::cout << "TCPClient connected.\n";
-        m_observer.onConnected(this);
+        connecting = false;
+        m_observer->onConnected(this);
     });
 }
 
@@ -46,13 +49,13 @@ void TcpClient::disconnect() {
 }
 
 void TcpClient::onReceived([[maybe_unused]] int connectionId, const uint8_t* data, size_t size) {
-    m_observer.onReceived(this, data, size);
+    m_observer->onReceived(this, data, size);
 }
 
 void TcpClient::onConnectionClosed([[maybe_unused]] int connectionId) {
     if (m_connection) {
         m_connection.reset();
         std::cout << "TCPClient disconnected.\n";
-        m_observer.onDisconnected(this);
+        m_observer->onDisconnected(this);
     }
 }
