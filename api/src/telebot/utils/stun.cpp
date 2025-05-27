@@ -75,12 +75,10 @@ struct StunServerObserver : TcpServer::Observer {
 
         send_s2c_clients(server);
     }
-};
+} serverObserver;
 
 TcpServer* server(int port) {
-    StunServerObserver* observer = new StunServerObserver();
-
-    TcpServer* server = new TcpServer(observer);
+    TcpServer* server = new TcpServer(serverObserver);
     server->listen(boost::asio::ip::tcp::v4(), port);
     server->startAcceptingConnections();
 
@@ -133,12 +131,10 @@ struct StunClientObserver : TcpClient::Observer {
     }
     
     void onDisconnected(TcpClient* client) {}
-};
+} clientObserver("hello");
 
 TcpClient* client(std::string address, int port, std::string name) {
-    StunClientObserver* observer = new StunClientObserver(name);
-
-    TcpClient* client = new TcpClient(observer);
+    TcpClient* client = new TcpClient(clientObserver);
     client->connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::make_address(address), port));
 
     return client;
