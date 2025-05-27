@@ -14,7 +14,7 @@ class TcpClient : private TcpConnection::Observer {
         virtual void onDisconnected(TcpClient* client);
     };
 
-    TcpClient(Observer* observer);
+    TcpClient(Observer& observer);
 
     void connect(const boost::asio::ip::tcp::endpoint& endpoint);
     void send(const uint8_t* data, size_t size);
@@ -29,7 +29,7 @@ class TcpClient : private TcpConnection::Observer {
     boost::asio::io_context m_ioContext;
     std::thread m_thread;
     std::shared_ptr<TcpConnection> m_connection;
-    Observer* m_observer;
+    Observer& m_observer;
 };
 
 #endif

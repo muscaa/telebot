@@ -12,7 +12,7 @@ void TcpServer::Observer::onReceived(TcpServer* server,
 
 void TcpServer::Observer::onConnectionClosed(TcpServer* server, [[maybe_unused]] int connectionId) {}
 
-TcpServer::TcpServer(Observer* observer)
+TcpServer::TcpServer(Observer& observer)
     : m_ioContext(),
       m_thread([this]() { m_ioContext.run(); }),
       m_acceptor(m_ioContext),
@@ -78,7 +78,7 @@ void TcpServer::doAccept() {
             connection->startReading();
             m_connections.insert({m_connectionCount, std::move(connection)});
             std::cout << "TCPServer accepted connection.\n";
-            m_observer->onConnectionAccepted(this, m_connectionCount);
+            m_observer.onConnectionAccepted(this, m_connectionCount);
             m_connectionCount++;
         }
         doAccept();
@@ -86,7 +86,7 @@ void TcpServer::doAccept() {
 }
 
 void TcpServer::onReceived(int connectionId, const uint8_t* data, size_t size) {
-    m_observer->onReceived(this, connectionId, data, size);
+    m_observer.onReceived(this, connectionId, data, size);
 }
 
 void TcpServer::onConnectionClosed(int connectionId) {
@@ -95,6 +95,6 @@ void TcpServer::onConnectionClosed(int connectionId) {
     }
     if (m_connections.erase(connectionId) > 0) {
         std::cout << "TCPServer removed connection.\n";
-        m_observer->onConnectionClosed(this, connectionId);
+        m_observer.onConnectionClosed(this, connectionId);
     }
 }
