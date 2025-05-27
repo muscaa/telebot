@@ -49,9 +49,9 @@ static void receive_c2s_login(TcpServer* server, int id, const uint8_t* data, si
 }
 
 struct StunServerObserver : TcpServer::Observer {
-    void onConnectionAccepted(TcpServer* server, int id) {}
+    void onConnectionAccepted(TcpServer* server, int id) override {}
 
-    void onReceived(TcpServer* server, int id, const uint8_t* data, size_t size) {
+    void onReceived(TcpServer* server, int id, const uint8_t* data, size_t size) override {
         size_t offset = 0;
 
         uint8_t packetId = bin::Byte(data, offset);
@@ -65,7 +65,7 @@ struct StunServerObserver : TcpServer::Observer {
         }
     }
     
-    void onConnectionClosed(TcpServer* server, int id) {
+    void onConnectionClosed(TcpServer* server, int id) override {
         for (auto it = clients.begin(); it != clients.end(); it++) {
             if (it->second == id) {
                 clients.erase(it);
@@ -114,11 +114,11 @@ struct StunClientObserver : TcpClient::Observer {
 
     StunClientObserver(const std::string& name) : name(name) {}
 
-    void onConnected(TcpClient* client) {
+    void onConnected(TcpClient* client) override {
         send_c2s_login(client, name);
     }
 
-    void onReceived(TcpClient* client, const uint8_t* data, size_t size) {
+    void onReceived(TcpClient* client, const uint8_t* data, size_t size) override {
         size_t offset = 0;
 
         uint8_t packetId = bin::Byte(data, offset);
@@ -132,7 +132,7 @@ struct StunClientObserver : TcpClient::Observer {
         }
     }
     
-    void onDisconnected(TcpClient* client) {}
+    void onDisconnected(TcpClient* client) override {}
 };
 
 TcpClient* client(std::string address, int port, std::string name) {
