@@ -19,6 +19,7 @@ class Plugin {
     std::string description;
     std::string plugin_lib;
     std::string plugin_main;
+    std::string plugin_main_cli;
 
     // paths
     boost::filesystem::path path;
@@ -36,6 +37,7 @@ class Plugin {
         const std::string& description,
         const std::string& plugin_lib,
         const std::string& plugin_main,
+        const std::string& plugin_main_cli,
         const boost::filesystem::path& path,
         const boost::filesystem::path& dir,
         const boost::filesystem::path& temp_dir,
@@ -47,34 +49,47 @@ class Plugin {
         description(description),
         plugin_lib(plugin_lib),
         plugin_main(plugin_main),
+        plugin_main_cli(plugin_main_cli),
         path(path),
         dir(dir),
         temp_dir(temp_dir),
         lib(lib) {};
+        
+        const std::string& getId() const { return id; }
+        
+        const std::string& getName() const { return name; }
+        
+        const std::string& getAuthor() const { return author; }
+        
+        const std::string& getVersion() const { return version; }
+        
+        const std::string& getDescription() const { return description; }
+        
+        const std::string& getPluginLib() const { return plugin_lib; }
+        
+        const std::string& getPluginMain() const { return plugin_main; }
+        
+        const std::string& getPluginMainCli() const { return plugin_main_cli; }
+        
+        const boost::filesystem::path& getPath() const { return path; }
+        
+        const boost::filesystem::path& getDir() const { return dir; }
+        
+        const boost::filesystem::path& getTempDir() const { return temp_dir; }
 
-    const boost::filesystem::path& getPath() const { return path; }
-
-    const boost::filesystem::path& getDir() const { return dir; }
-
-    const boost::filesystem::path& getTempDir() const { return temp_dir; }
-
-    const std::string& getId() const { return id; }
-
-    const std::string& getName() const { return name; }
-
-    const std::string& getAuthor() const { return author; }
-
-    const std::string& getVersion() const { return version; }
-
-    const std::string& getDescription() const { return description; }
-
-    const std::string& getPluginLib() const { return plugin_lib; }
-
-    const std::string& getPluginMain() const { return plugin_main; }
+        const boost::dll::experimental::smart_library* getLib() const { return lib; }
 };
 
 extern API std::map<std::string, Plugin*> loaded_plugins;
 
-Plugin* load(const boost::filesystem::path& zip_path, bool sub_path = true);
+Plugin* extract(const boost::filesystem::path& zip_path);
+
+Plugin* load(const boost::filesystem::path& zip_path);
+
+void load_from(const boost::filesystem::path& dir);
+
+Plugin* load_cli(const boost::filesystem::path& zip_path);
+
+void load_cli_from(const boost::filesystem::path& dir);
 
 }  // namespace telebot::plugins

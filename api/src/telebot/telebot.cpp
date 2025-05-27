@@ -87,20 +87,7 @@ bool init() {
 
     telebot::utils::files::init();
     telebot::utils::platform::init();
-
-    for (boost::filesystem::directory_iterator it(telebot::utils::files::PLUGINS_DIR); it != boost::filesystem::directory_iterator {}; it++) {
-        boost::filesystem::directory_entry& entry = *it;
-        if (!entry.is_regular_file()) {
-            continue;
-        }
-
-        boost::filesystem::path path = entry.path().filename();
-        if (path.extension() != ".zip") {
-            continue;
-        }
-
-        telebot::plugins::load(path);
-    }
+    telebot::plugins::load_from(telebot::utils::files::PLUGINS_DIR);
 
     return true;
 }

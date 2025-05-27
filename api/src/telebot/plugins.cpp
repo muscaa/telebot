@@ -17,16 +17,15 @@ namespace log = telebot::utils::logging;
 
 std::map<std::string, Plugin*> loaded_plugins;
 
-Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
-    log::info("Loading {}...", zip_path.string());
+Plugin* extract(const boost::filesystem::path& zip_path) {
+    log::info("Extracting {}...", zip_path.string());
 
-    boost::filesystem::path path = sub_path ? telebot::utils::files::PLUGINS_DIR / zip_path : zip_path;
-    if (!boost::filesystem::exists(path)) {
+    if (!boost::filesystem::exists(zip_path)) {
         log::warn("Plugin {} does not exist!", zip_path.string());
         return nullptr;
     }
     
-    libzippp::ZipArchive zip(path.string());
+    libzippp::ZipArchive zip(zip_path.string());
     zip.open(libzippp::ZipArchive::ReadOnly);
 
     libzippp::ZipEntry plugin_json_entry = zip.getEntry("plugin.json");
@@ -54,6 +53,7 @@ Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
     std::string description = plugin_json.contains("description") ? std::string(plugin_json["description"].as_string()) : "No description.";
     std::string plugin_lib = std::string(plugin_json["plugin_lib"].as_string());
     std::string plugin_main = std::string(plugin_json["plugin_main"].as_string());
+    std::string plugin_main_cli = std::string(plugin_json["plugin_main_cli"].as_string());
 
     if (loaded_plugins.find(id) != loaded_plugins.end()) {
         log::warn("Plugin {} with id {} is already loaded!", zip_path.string(), id);
@@ -101,14 +101,74 @@ Plugin* load(const boost::filesystem::path& zip_path, bool sub_path) {
     zip.close();
 
     boost::dll::experimental::smart_library* lib = new boost::dll::experimental::smart_library(temp_dir / (plugin_lib + telebot::utils::platform::LIB_EXT));
-    boost::function<void (const telebot::plugins::Plugin&)> main = lib->get_function<void (const telebot::plugins::Plugin&)>(plugin_main);
+    Plugin* plugin = new Plugin(id, name, author, version, description, plugin_lib, plugin_main, plugin_main_cli, zip_path, dir, temp_dir, lib);
+    return plugin;
+}
 
-    Plugin* plugin = new Plugin(id, name, author, version, description, plugin_lib, plugin_main, path, dir, temp_dir, lib);
-    loaded_plugins[id] = plugin;
+Plugin* load(const boost::filesystem::path& zip_path) {
+    Plugin* plugin = extract(zip_path);
+    if (plugin == nullptr) {
+        log::warn("Failed to load plugin from {}", zip_path.string());
+        return nullptr;
+    }
 
+    log::info("Loading {}...", zip_path.string());
+
+    loaded_plugins[plugin->getId()] = plugin;
+
+    boost::function<void (const telebot::plugins::Plugin&)> main = plugin->getLib()->get_function<void (const telebot::plugins::Plugin&)>(plugin->getPluginMain());
     main(*plugin);
 
     return plugin;
+}
+
+void load_from(const boost::filesystem::path& dir) {
+    for (boost::filesystem::directory_iterator it(dir); it != boost::filesystem::directory_iterator {}; it++) {
+        boost::filesystem::directory_entry& entry = *it;
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+
+        boost::filesystem::path path = entry.path();
+        if (path.extension() != ".zip") {
+            continue;
+        }
+
+        telebot::plugins::load(path);
+    }
+}
+
+Plugin* load_cli(const boost::filesystem::path& zip_path) {
+    Plugin* plugin = extract(zip_path);
+    if (plugin == nullptr) {
+        log::warn("Failed to load plugin from {}", zip_path.string());
+        return nullptr;
+    }
+
+    log::info("Loading {}...", zip_path.string());
+
+    loaded_plugins[plugin->getId()] = plugin;
+
+    boost::function<void (const telebot::plugins::Plugin&)> main_cli = plugin->getLib()->get_function<void (const telebot::plugins::Plugin&)>(plugin->getPluginMainCli());
+    main_cli(*plugin);
+
+    return plugin;
+}
+
+void load_cli_from(const boost::filesystem::path& dir) {
+    for (boost::filesystem::directory_iterator it(dir); it != boost::filesystem::directory_iterator {}; it++) {
+        boost::filesystem::directory_entry& entry = *it;
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+
+        boost::filesystem::path path = entry.path();
+        if (path.extension() != ".zip") {
+            continue;
+        }
+
+        telebot::plugins::load_cli(path);
+    }
 }
 
 } // namespace telebot::plugins
