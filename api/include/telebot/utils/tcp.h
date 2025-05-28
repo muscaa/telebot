@@ -18,34 +18,41 @@ struct ConnectionListener {
 
 class Connection {
    private:
-    std::unique_ptr<boost::asio::ip::tcp::socket> socket;
-    std::shared_ptr<ConnectionListener> listener;
+    boost::asio::ip::tcp::socket socket;
+    ConnectionListener* listener;
     int id;
 
-    bool isReading;
+    bool reading;
     boost::asio::streambuf readBuffer;
 
-    bool isWritting;
+    bool writing;
     boost::asio::streambuf writeBuffer;
     std::mutex writeBufferMutex;
-
-    Connection(std::unique_ptr<boost::asio::ip::tcp::socket>& socket, std::shared_ptr<ConnectionListener>& listener, int id = 0)
-        : socket(std::move(socket)),
-        listener(listener),
-        id(id) {}
 
     void doRead();
 
     void doWrite();
 
    public:
+    Connection(boost::asio::ip::tcp::socket& socket, ConnectionListener* listener, int id = 0)
+        : socket(std::move(socket)),
+        listener(listener),
+        id(id),
+        reading(false),
+        readBuffer(),
+        writing(false),
+        writeBuffer(),
+        writeBufferMutex() {}
+
     void startReading();
 
     void send(const uint8_t* data, size_t size);
 
     void close();
 
-    bool isOpen() const { return socket->is_open(); }
+    bool isOpen() const { return socket.is_open(); }
+
+    boost::asio::ip::tcp::socket& getSocket() { return socket; }
 
     int getId() const { return id; }
 };
@@ -61,7 +68,7 @@ struct ClientListener {
     virtual void onDisconnected(Client* client) = 0;
 };
 
-class Client : private ConnectionListener {
+class Client : public ConnectionListener {
    private:
     std::shared_ptr<ClientListener> listener;
     
@@ -75,11 +82,14 @@ class Client : private ConnectionListener {
     void onConnectionClosed(int id) override;
 
    public:
-    Client(std::shared_ptr<ClientListener>& listener)
+    Client(const std::shared_ptr<ClientListener>& listener)
         : listener(listener),
-        thread([this]() { ioContext.run(); }) {}
+        ioContext(),
+        thread([this]() { ioContext.run(); }),
+        connection(),
+        connecting(false) {}
 
-    void connect(const boost::asio::ip::tcp::endpoint& endpoint);
+    void connect(const boost::asio::ip::address& address, boost::asio::ip::port_type port);
 
     void send(const uint8_t* data, size_t size);
 
@@ -99,7 +109,7 @@ struct ServerListener {
     virtual void onConnectionClosed(Server* server, int id) = 0;
 };
 
-class Server : private ConnectionListener {
+class Server : public ConnectionListener {
    private:
     std::shared_ptr<ServerListener> listener;
 
@@ -108,8 +118,8 @@ class Server : private ConnectionListener {
     boost::asio::ip::tcp::acceptor acceptor;
     std::unordered_map<int, std::shared_ptr<Connection>> connections;
     int connectionIdCounter;
-    bool isAccepting;
-    bool isClosing;
+    bool accepting;
+    bool closing;
 
     void onReceived(int id, const uint8_t* data, size_t size) override;
     
@@ -118,10 +128,15 @@ class Server : private ConnectionListener {
     void doAccept();
 
    public:
-    Server(std::shared_ptr<ServerListener>& listener)
+    Server(const std::shared_ptr<ServerListener>& listener)
         : listener(listener),
+        ioContext(),
         thread([this]() { ioContext.run(); }),
-        acceptor(ioContext) {}
+        acceptor(ioContext),
+        connections(),
+        connectionIdCounter(0),
+        accepting(false),
+        closing(false) {}
 
     bool listen(const boost::asio::ip::tcp& protocol, uint16_t port);
 

@@ -16,13 +16,13 @@ int main(const std::vector<std::string>& args) {
     }
 
     if (args[1] == "server") {
-        TcpServer* server = telebot::utils::stun::server(1234);
+        telebot::utils::tcp::Server* server = telebot::utils::stun::server(1234);
 
         while (server->isRunning()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     } else if (args[1] == "client") {
-        TcpClient* client = telebot::utils::stun::client("127.0.0.1", 1234, args[2]);
+        telebot::utils::tcp::Client* client = telebot::utils::stun::client("127.0.0.1", 1234, args[2]);
 
         while (client->isConnected()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));

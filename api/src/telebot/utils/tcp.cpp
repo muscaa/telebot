@@ -1,41 +1,44 @@
 #include "telebot/utils/tcp.h"
 
+#include "telebot/utils/logging.h"
+
 namespace telebot::utils::tcp {
+
+namespace log = telebot::utils::logging;
 
 // connection
 
 void Connection::doRead() {
-    isReading = true;
+    reading = true;
 
     boost::asio::mutable_buffer buffers(readBuffer.prepare(1024));
-
-    socket->async_read_some(buffers, [this](const auto& error, auto bytesTransferred) {
+    socket.async_read_some(buffers, [this](const boost::system::error_code& error, std::size_t length) {
         if (error) {
             close();
             return;
         }
 
-        readBuffer.commit(bytesTransferred);
-        listener->onReceived(id, static_cast<const uint8_t*>(readBuffer.data().data()), bytesTransferred);
-        readBuffer.consume(bytesTransferred);
+        readBuffer.commit(length);
+        listener->onReceived(id, static_cast<const uint8_t*>(readBuffer.data().data()), length);
+        readBuffer.consume(length);
 
         doRead();
     });
 }
 
 void Connection::doWrite() {
-    isWritting = true;
+    writing = true;
 
-    socket->async_write_some(writeBuffer.data(), [this](const auto& error, auto bytesTransferred) {
+    socket.async_write_some(writeBuffer.data(), [this](const boost::system::error_code& error, std::size_t length) {
         if (error) {
             close();
             return;
         }
 
         std::lock_guard<std::mutex> guard(writeBufferMutex);
-        writeBuffer.consume(bytesTransferred);
+        writeBuffer.consume(length);
         if (writeBuffer.size() == 0) {
-            isWritting = false;
+            writing = false;
             return;
         }
 
@@ -44,7 +47,7 @@ void Connection::doWrite() {
 }
 
 void Connection::startReading() {
-    if (!isReading) {
+    if (!reading) {
         doRead();
     }
 }
@@ -55,15 +58,15 @@ void Connection::send(const uint8_t* data, size_t size) {
     std::ostream bufferStream(&writeBuffer);
     bufferStream.write(reinterpret_cast<const char*>(data), size);
 
-    if (!isWritting) {
+    if (!writing) {
         doWrite();
     }
 }
 
 void Connection::close() {
     try {
-        socket->cancel();
-        socket->close();
+        socket.cancel();
+        socket.close();
     } catch (const std::exception& e) {
         return;
     }
@@ -84,21 +87,21 @@ void Client::onConnectionClosed(int id) {
     }
 }
 
-void Client::connect(const boost::asio::ip::tcp::endpoint& endpoint) {
+void Client::connect(const boost::asio::ip::address& address, boost::asio::ip::port_type port) {
     if (connection) {
         return;
     }
 
     connecting = true;
-    std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioContext);
-    socket->async_connect(endpoint, [this, socket](const auto& error) {
+    boost::asio::ip::tcp::socket socket(ioContext);
+    connection = std::make_shared<Connection>(socket, this);
+    connection->getSocket().async_connect(boost::asio::ip::tcp::endpoint(address, port), [this](const boost::system::error_code& error) {
         if (error) {
             connecting = false;
             listener->onDisconnected(this);
             return;
         }
 
-        connection = std::make_shared<Connection>(socket, this);
         connection->startReading();
         connecting = false;
         listener->onConnected(this);
@@ -124,7 +127,7 @@ void Server::onReceived(int id, const uint8_t* data, size_t size) {
 }
 
 void Server::onConnectionClosed(int id) {
-    if (isClosing) {
+    if (closing) {
         return;
     }
 
@@ -134,10 +137,11 @@ void Server::onConnectionClosed(int id) {
 }
 
 void Server::doAccept() {
-    isAccepting = true;
-    acceptor.async_accept([this](const auto& error, auto socket) {
+    accepting = true;
+
+    acceptor.async_accept([this](const boost::system::error_code& error, boost::asio::ip::tcp::socket socket) {
         if (error) {
-            isAccepting = false;
+            accepting = false;
             return;
         }
 
@@ -164,7 +168,7 @@ bool Server::listen(const boost::asio::ip::tcp& protocol, uint16_t port) {
 }
 
 void Server::startAccepting() {
-    if (!isAccepting) {
+    if (!accepting) {
         doAccept();
     }
 }
@@ -184,13 +188,13 @@ void Server::sendAll(const uint8_t* data, size_t size) {
 }
 
 void Server::close() {
-    isClosing = true;
+    closing = true;
     acceptor.cancel();
     for (const auto& [id, connection] : connections) {
         connection->close();
     }
     connections.clear();
-    isClosing = false;
+    closing = false;
 }
 
 } // namespace telebot::utils::tcp
