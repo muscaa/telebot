@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <unordered_map>
+#include <concepts>
 
 namespace telebot::utils::tcp {
 
@@ -58,9 +59,17 @@ class Connection {
 };
 
 struct ClientListener;
+template<typename T>
+concept BaseClientListener = std::is_base_of_v<ClientListener, T>;
+
 class Client;
+template<typename T>
+concept BaseClient = std::is_base_of_v<Client, T>;
 
 struct ClientListener {
+    template<BaseClientListener T>
+    T* as() { return dynamic_cast<T*>(this); }
+
     virtual void onConnected(Client* client) = 0;
 
     virtual void onReceived(Client* client, const uint8_t* data, size_t size) = 0;
@@ -89,7 +98,14 @@ class Client : public ConnectionListener {
         connection(),
         connecting(false) {}
 
+    template<BaseClient T>
+    T* as() { return dynamic_cast<T*>(this); }
+
     void connect(const boost::asio::ip::address& address, boost::asio::ip::port_type port);
+
+    void connect(const std::string& address, boost::asio::ip::port_type port) {
+        connect(boost::asio::ip::make_address(address), port);
+    }
 
     void send(const uint8_t* data, size_t size);
 
@@ -99,9 +115,17 @@ class Client : public ConnectionListener {
 };
 
 struct ServerListener;
+template<typename T>
+concept BaseServerListener = std::is_base_of_v<ServerListener, T>;
+
 class Server;
+template<typename T>
+concept BaseServer = std::is_base_of_v<Server, T>;
 
 struct ServerListener {
+    template<BaseServerListener T>
+    T* as() { return dynamic_cast<T*>(this); }
+
     virtual void onConnectionAccepted(Server* server, int id) = 0;
 
     virtual void onReceived(Server* server, int id, const uint8_t* data, size_t size) = 0;
@@ -138,9 +162,14 @@ class Server : public ConnectionListener {
         accepting(false),
         closing(false) {}
 
-    bool listen(const boost::asio::ip::tcp& protocol, uint16_t port);
+    template<BaseServer T>
+    T* as() { return dynamic_cast<T*>(this); }
 
-    void startAccepting();
+    void start(const boost::asio::ip::tcp& protocol, boost::asio::ip::port_type port);
+
+    void start(boost::asio::ip::port_type port) {
+        start(boost::asio::ip::tcp::v4(), port);
+    }
 
     void send(int id, const uint8_t* data, size_t size);
 

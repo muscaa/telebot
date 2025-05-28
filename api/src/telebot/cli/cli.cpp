@@ -6,6 +6,7 @@
 namespace telebot::cli {
 
 namespace log = telebot::utils::logging;
+namespace stun = telebot::utils::stun;
 
 int main(const std::vector<std::string>& args) {
     log::info("telebot::cli::main() called with {} arguments", args.size());
@@ -16,13 +17,15 @@ int main(const std::vector<std::string>& args) {
     }
 
     if (args[1] == "server") {
-        telebot::utils::tcp::Server* server = telebot::utils::stun::server(1234);
+        stun::Server* server = new stun::Server(std::make_shared<stun::ServerListener>());
+        server->start(1234);
 
         while (server->isRunning()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     } else if (args[1] == "client") {
-        telebot::utils::tcp::Client* client = telebot::utils::stun::client("127.0.0.1", 1234, args[2]);
+        stun::Client* client = new stun::Client(std::make_shared<stun::ClientListener>(), args[2]);
+        client->connect("127.0.0.1", 1234);
 
         while (client->isConnected()) {
             std::this_thread::sleep_for(std::chrono::seconds(1));

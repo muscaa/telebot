@@ -155,19 +155,16 @@ void Server::doAccept() {
     });
 }
 
-bool Server::listen(const boost::asio::ip::tcp& protocol, uint16_t port) {
+void Server::start(const boost::asio::ip::tcp& protocol, boost::asio::ip::port_type port) {
     try {
         acceptor.open(protocol);
         acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
         acceptor.bind(boost::asio::ip::tcp::endpoint(protocol, port));
         acceptor.listen(boost::asio::socket_base::max_listen_connections);
     } catch (const std::exception& e) {
-        return false;
+        return;
     }
-    return true;
-}
 
-void Server::startAccepting() {
     if (!accepting) {
         doAccept();
     }
