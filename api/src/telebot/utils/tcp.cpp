@@ -2,6 +2,8 @@
 
 namespace telebot::utils::tcp {
 
+// connection
+
 void Connection::doRead() {
     isReading = true;
 
@@ -19,18 +21,6 @@ void Connection::doRead() {
 
         doRead();
     });
-
-    /*auto self{shared_from_this()};
-    m_socket.async_read_some(buffers, [this, self](const auto &error, auto bytesTransferred) {
-        if (error) {
-            std::cerr << "TcpConnection::doRead() error: " + error.message() + ".\n";
-            return close();
-        }
-        m_readBuffer.commit(bytesTransferred);
-        m_observer.onReceived(m_id, static_cast<const uint8_t*>(m_readBuffer.data().data()), bytesTransferred);
-        m_readBuffer.consume(bytesTransferred);
-        doRead();
-    });*/
 }
 
 void Connection::doWrite() {
@@ -51,24 +41,6 @@ void Connection::doWrite() {
 
         doWrite();
     });
-
-    /*m_isWritting = true;
-    auto self{shared_from_this()};
-    m_socket.async_write_some(
-        m_writeBuffer.data(),
-        [this, self](const auto &error, auto bytesTransferred) {
-            if (error) {
-                std::cerr << "TcpConnection::doWrite() error: " + error.message() + ".\n";
-                return close();
-            }
-            std::lock_guard<std::mutex> guard{m_writeBufferMutex};
-            m_writeBuffer.consume(bytesTransferred);
-            if (m_writeBuffer.size() == 0) {
-                m_isWritting = false;
-                return;
-            }
-            doWrite();
-        });*/
 }
 
 void Connection::startReading() {
@@ -97,6 +69,128 @@ void Connection::close() {
     }
 
     listener->onConnectionClosed(id);
+}
+
+// client
+
+void Client::onReceived(int id, const uint8_t* data, size_t size) {
+    listener->onReceived(this, data, size);
+}
+
+void Client::onConnectionClosed(int id) {
+    if (connection) {
+        connection.reset();
+        listener->onDisconnected(this);
+    }
+}
+
+void Client::connect(const boost::asio::ip::tcp::endpoint& endpoint) {
+    if (connection) {
+        return;
+    }
+
+    connecting = true;
+    std::shared_ptr<boost::asio::ip::tcp::socket> socket = std::make_shared<boost::asio::ip::tcp::socket>(ioContext);
+    socket->async_connect(endpoint, [this, socket](const auto& error) {
+        if (error) {
+            connecting = false;
+            listener->onDisconnected(this);
+            return;
+        }
+
+        connection = std::make_shared<Connection>(socket, this);
+        connection->startReading();
+        connecting = false;
+        listener->onConnected(this);
+    });
+}
+
+void Client::send(const uint8_t* data, size_t size) {
+    if (connection) {
+        connection->send(data, size);
+    }
+}
+
+void Client::disconnect() {
+    if (connection) {
+        connection->close();
+    }
+}
+
+// server
+
+void Server::onReceived(int id, const uint8_t* data, size_t size) {
+    listener->onReceived(this, id, data, size);
+}
+
+void Server::onConnectionClosed(int id) {
+    if (isClosing) {
+        return;
+    }
+
+    if (connections.erase(id) > 0) {
+        listener->onConnectionClosed(this, id);
+    }
+}
+
+void Server::doAccept() {
+    isAccepting = true;
+    acceptor.async_accept([this](const auto& error, auto socket) {
+        if (error) {
+            isAccepting = false;
+            return;
+        }
+
+        std::shared_ptr<Connection> connection = std::make_shared<Connection>(socket, this, connectionIdCounter);
+        connection->startReading();
+        connections[connectionIdCounter] = connection;
+        listener->onConnectionAccepted(this, connectionIdCounter);
+        connectionIdCounter++;
+
+        doAccept();
+    });
+}
+
+bool Server::listen(const boost::asio::ip::tcp& protocol, uint16_t port) {
+    try {
+        acceptor.open(protocol);
+        acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+        acceptor.bind(boost::asio::ip::tcp::endpoint(protocol, port));
+        acceptor.listen(boost::asio::socket_base::max_listen_connections);
+    } catch (const std::exception& e) {
+        return false;
+    }
+    return true;
+}
+
+void Server::startAccepting() {
+    if (!isAccepting) {
+        doAccept();
+    }
+}
+
+void Server::send(int id, const uint8_t* data, size_t size) {
+    if (connections.count(id) == 0) {
+        return;
+    }
+
+    connections.at(id)->send(data, size);
+}
+
+void Server::sendAll(const uint8_t* data, size_t size) {
+    for (const auto& [id, connection] : connections) {
+        connection->send(data, size);
+    }
+}
+
+void Server::close() {
+    isClosing = true;
+    acceptor.cancel();
+    for (const auto& [id, connection] : connections) {
+        connection->close();
+    }
+    connections.clear();
+    isClosing = false;
 }
 
 } // namespace telebot::utils::tcp
