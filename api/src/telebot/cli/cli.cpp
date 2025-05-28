@@ -1,37 +1,29 @@
 #include "telebot/cli/cli.h"
 
+#include <boost/function.hpp>
+
 #include "telebot/utils/logging.h"
-#include "telebot/utils/stun.h"
+#include "telebot/utils/files.h"
+#include "telebot/utils/platform.h"
+#include "telebot/plugins.h"
 
 namespace telebot::cli {
 
 namespace log = telebot::utils::logging;
-namespace stun = telebot::utils::stun;
 
 int main(const std::vector<std::string>& args) {
-    log::info("telebot::cli::main() called with {} arguments", args.size());
-
     if (args.size() < 2) {
-        log::info("Usage: {} <server|client>", args[0]);
+        log::info("Usage: {} <plugin-id> [args...]", args[0]);
         return 1;
     }
 
-    if (args[1] == "server") {
-        stun::Server* server = new stun::Server(std::make_shared<stun::ServerListener>());
-        server->start(1234);
+    telebot::utils::files::init();
+    telebot::utils::platform::init();
+    telebot::plugins::load_cli_from(telebot::utils::files::PLUGINS_DIR);
 
-        while (server->isRunning()) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    } else if (args[1] == "client") {
-        stun::Client* client = new stun::Client(std::make_shared<stun::ClientListener>(), args[2]);
-        client->connect("127.0.0.1", 1234);
-
-        while (client->isConnected()) {
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
-    return 0;
+    telebot::plugins::Plugin* plugin = telebot::plugins::loaded_plugins[args[1]];
+    boost::function<int (const telebot::plugins::Plugin&, const std::vector<std::string>&)> main_cli = plugin->getLib()->get_function<int (const telebot::plugins::Plugin&, const std::vector<std::string>&)>(plugin->getPluginMainCli());
+    return main_cli(*plugin, args);
 }
 
 } // namespace telebot::cli

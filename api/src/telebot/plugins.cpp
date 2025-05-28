@@ -149,9 +149,6 @@ Plugin* load_cli(const boost::filesystem::path& zip_path) {
 
     loaded_plugins[plugin->getId()] = plugin;
 
-    boost::function<void (const telebot::plugins::Plugin&)> main_cli = plugin->getLib()->get_function<void (const telebot::plugins::Plugin&)>(plugin->getPluginMainCli());
-    main_cli(*plugin);
-
     return plugin;
 }
 
