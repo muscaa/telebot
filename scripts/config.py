@@ -14,6 +14,7 @@ PACKAGE_OTHER: list[File] = [
 SDK_INCLUDE: list[File] = [
     File("api/"),
     File("app/"),
+    File("cli/"),
     File("vcpkg_triplets/"),
     File("sdk/CMakeLists.txt", "CMakeLists.txt"),
     File("sdk/include.cmake", "include.cmake"),
