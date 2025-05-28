@@ -6,6 +6,9 @@
 
 namespace telebot::utils::tcp {
 
+struct ConnectionListener;
+class Connection;
+
 struct ConnectionListener {
     virtual void onReceived(int id, const uint8_t* data, size_t size) = 0;
 
@@ -46,32 +49,41 @@ class Connection {
     int getId() const { return id; }
 };
 
+struct ClientListener;
+class Client;
+
 struct ClientListener {
-    virtual void onConnected(TcpClient* client) = 0;
+    virtual void onConnected(Client* client) = 0;
 
-    virtual void onReceived(TcpClient* client, const uint8_t* data, size_t size) = 0;
+    virtual void onReceived(Client* client, const uint8_t* data, size_t size) = 0;
 
-    virtual void onDisconnected(TcpClient* client) = 0;
+    virtual void onDisconnected(Client* client) = 0;
 };
 
-class TcpClient : private TcpConnection::Observer {
-   public:
-    TcpClient(Observer& observer);
-
-    void connect(const boost::asio::ip::tcp::endpoint& endpoint);
-    void send(const uint8_t* data, size_t size);
-    void disconnect();
-    bool isConnected() const { return (m_connection && m_connection->isOpen()) || connecting; }
-
+class Client : private ConnectionListener {
    private:
+    std::shared_ptr<ClientListener> listener;
+    
+    boost::asio::io_context ioContext;
+    std::thread thread;
+    std::shared_ptr<Connection> connection;
+    bool connecting;
+   
     void onReceived(int id, const uint8_t* data, size_t size) override;
+
     void onConnectionClosed(int id) override;
 
-    bool connecting;
-    boost::asio::io_context m_ioContext;
-    std::thread m_thread;
-    std::shared_ptr<TcpConnection> m_connection;
-    Observer& m_observer;
+   public:
+    Client(std::shared_ptr<ClientListener>& listener)
+        : listener(listener) {}
+
+    void connect(const boost::asio::ip::tcp::endpoint& endpoint);
+
+    void send(const uint8_t* data, size_t size);
+
+    void disconnect();
+
+    bool isConnected() const { return (connection && connection->isOpen()) || connecting; }
 };
 
 } // namespace telebot::utils::tcp
