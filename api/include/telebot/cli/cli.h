@@ -5,6 +5,8 @@
 
 namespace telebot::cli {
 
-int main(const std::vector<std::string>& args);
+extern std::vector<std::string> args;
+
+int main_cli(int argc, char** argv);
 
 } // namespace telebot::cli
