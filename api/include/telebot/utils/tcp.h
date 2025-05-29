@@ -98,6 +98,10 @@ class Client : public ConnectionListener {
         connection(),
         connecting(false) {}
 
+    ~Client() {
+        thread.join();
+    }
+
     template<BaseClient T>
     T* as() { return dynamic_cast<T*>(this); }
 
@@ -161,6 +165,10 @@ class Server : public ConnectionListener {
         connectionIdCounter(0),
         accepting(false),
         closing(false) {}
+
+    ~Server() {
+        thread.join();
+    }
 
     template<BaseServer T>
     T* as() { return dynamic_cast<T*>(this); }
