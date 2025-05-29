@@ -26,9 +26,7 @@ struct ClientListener : public tcp::ClientListener {
 
     virtual void sendC2SLogin(Client* client, const std::string& name);
 
-    virtual void onList(Client* client, const std::vector<std::string>& list) {
-        
-    };
+    virtual void onList(Client* client, const std::vector<std::string>& list) = 0;
 };
 
 class Client : public tcp::Client {
@@ -53,9 +51,9 @@ struct ServerListener : public tcp::ServerListener {
 
     void onConnectionClosed(tcp::Server* server, int id) override;
 
-    void sendS2CList(Server* server);
+    virtual void sendS2CList(Server* server);
 
-    void readC2SLogin(Server* server, int id, const uint8_t* data, size_t& offset);
+    virtual void readC2SLogin(Server* server, int id, const uint8_t* data, size_t& offset);
 };
 
 class Server : public tcp::Server {
