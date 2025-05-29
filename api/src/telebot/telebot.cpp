@@ -13,10 +13,12 @@
 #include "telebot/utils/platform.h"
 #include "telebot/events.h"
 #include "telebot/utils/logging.h"
+#include "telebot/utils/stun.h"
 
 namespace telebot {
 
 namespace log = telebot::utils::logging;
+namespace stun = telebot::utils::stun;
 
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
@@ -29,6 +31,12 @@ int screen_width;
 int screen_height;
 
 bool init() {
+    struct ClientListener : public stun::ClientListener {
+        void onList(stun::Client* client, const std::vector<std::string>& list) {}
+    };
+    stun::Client* client = new stun::Client(std::make_shared<ClientListener>(), "why is this needed?"); // weird bug if these
+    client->connect("127.0.0.1", 1);                                                                    // 2 lines are missing
+
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
         SDL_Log("Error: SDL_Init(): %s\n", SDL_GetError());
         return false;
