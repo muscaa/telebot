@@ -33,6 +33,12 @@ int screen_height;
 bool init() {
     struct ClientListener : public stun::ClientListener {
         void onList(stun::Client* client, const std::vector<std::string>& list) {}
+
+        void onLinkRequest(stun::Client* client, const std::string& from) {}
+
+        void onLinkAccepted(stun::Client* client, const std::string& name, const std::string& ip, uint16_t port) {}
+
+        void onLinkDeclined(stun::Client* client, const std::string& name, const std::string& message) {}
     };
     stun::Client* client = new stun::Client(std::make_shared<ClientListener>(), "why is this needed?"); // weird bug if these
     client->connect("127.0.0.1", 1);                                                                    // 2 lines are missing
