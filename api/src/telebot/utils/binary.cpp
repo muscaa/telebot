@@ -6,120 +6,134 @@ namespace telebot::utils::binary {
 
 // reading
 
+template<typename T>
+static T read(const uint8_t* data, size_t& offset) {
+    return data[offset++];
+}
+
 bool Bool(const uint8_t* data, size_t& offset) {
-    bool value;
-    std::memcpy(&value, data + offset, sizeof(bool));
-    offset += sizeof(bool);
-    return value;
+    return read<uint8_t>(data, offset) != 0;
 }
 
 uint8_t Byte(const uint8_t* data, size_t& offset) {
-    uint8_t value = data[offset];
-    offset += sizeof(uint8_t);
-    return value;
+    return read<uint8_t>(data, offset);
 }
 
 char Char(const uint8_t* data, size_t& offset) {
-    char value;
-    std::memcpy(&value, data + offset, sizeof(char));
-    offset += sizeof(char);
-    return value;
+    return (read<int16_t>(data, offset) & 0xFF) << 8
+        | (read<int16_t>(data, offset) & 0xFF);
 }
 
 int16_t Short(const uint8_t* data, size_t& offset) {
-    int16_t value;
-    std::memcpy(&value, data + offset, sizeof(int16_t));
-    offset += sizeof(int16_t);
-    return value;
+    return (read<int16_t>(data, offset) & 0xFF) << 8
+        | (read<int16_t>(data, offset) & 0xFF);
 }
 
 int32_t Int(const uint8_t* data, size_t& offset) {
-    int32_t value;
-    std::memcpy(&value, data + offset, sizeof(int32_t));
-    offset += sizeof(int32_t);
-    return value;
+    return (read<int32_t>(data, offset) & 0xFF) << 24
+        | (read<int32_t>(data, offset) & 0xFF) << 16
+        | (read<int32_t>(data, offset) & 0xFF) << 8
+        | (read<int32_t>(data, offset) & 0xFF);
 }
 
 float Float(const uint8_t* data, size_t& offset) {
-    float value;
-    std::memcpy(&value, data + offset, sizeof(float));
-    offset += sizeof(float);
+    int32_t valueInt = Int(data, offset);
+    float value = 0.0;
+    std::memcpy(&value, &valueInt, sizeof(float));
     return value;
 }
 
 int64_t Long(const uint8_t* data, size_t& offset) {
-    int64_t value;
-    std::memcpy(&value, data + offset, sizeof(int64_t));
-    offset += sizeof(int64_t);
-    return value;
+    return (read<int64_t>(data, offset) & 0xFF) << 56
+        | (read<int64_t>(data, offset) & 0xFF) << 48
+        | (read<int64_t>(data, offset) & 0xFF) << 40
+        | (read<int64_t>(data, offset) & 0xFF) << 32
+        | (read<int64_t>(data, offset) & 0xFF) << 24
+        | (read<int64_t>(data, offset) & 0xFF) << 16
+        | (read<int64_t>(data, offset) & 0xFF) << 8
+        | (read<int64_t>(data, offset) & 0xFF);
 }
 
 double Double(const uint8_t* data, size_t& offset) {
-    double value;
-    std::memcpy(&value, data + offset, sizeof(double));
-    offset += sizeof(double);
+    int64_t valueLong = Long(data, offset);
+    double value = 0.0;
+    std::memcpy(&value, &valueLong, sizeof(double));
     return value;
 }
 
 std::string String(const uint8_t* data, size_t& offset, size_t length) {
-    std::string value(reinterpret_cast<const char*>(data + offset), length);
-    offset += length;
+    std::string value = "";
+    for (size_t i = 0; i < length; i++) {
+        value += Char(data, offset);
+    }
     return value;
 }
 
 std::string LenString(const uint8_t* data, size_t& offset) {
     int32_t length = Int(data, offset);
-    return String(data, offset, static_cast<size_t>(length));
+    return String(data, offset, length);
 }
 
 // writing
 
+static void write(uint8_t* data, size_t& offset, uint8_t value) {
+    data[offset++] = value;
+}
+
 void Bool(uint8_t* data, size_t& offset, bool value) {
-    std::memcpy(data + offset, &value, sizeof(bool));
-    offset += sizeof(bool);
+    write(data, offset, value ? 1 : 0);
 }
 
 void Byte(uint8_t* data, size_t& offset, uint8_t value) {
-    data[offset] = value;
-    offset += sizeof(uint8_t);
+    write(data, offset, value);
 }
 
 void Char(uint8_t* data, size_t& offset, char value) {
-    std::memcpy(data + offset, &value, sizeof(char));
-    offset += sizeof(char);
+    write(data, offset, (value >> 8) & 0xFF);
+    write(data, offset, value & 0xFF);
 }
 
 void Short(uint8_t* data, size_t& offset, int16_t value) {
-    std::memcpy(data + offset, &value, sizeof(int16_t));
-    offset += sizeof(int16_t);
+    write(data, offset, (value >> 8) & 0xFF);
+    write(data, offset, value & 0xFF);
 }
 
 void Int(uint8_t* data, size_t& offset, int32_t value) {
-    std::memcpy(data + offset, &value, sizeof(int32_t));
-    offset += sizeof(int32_t);
+    write(data, offset, (value >> 24) & 0xFF);
+    write(data, offset, (value >> 16) & 0xFF);
+    write(data, offset, (value >> 8) & 0xFF);
+    write(data, offset, value & 0xFF);
 }
 
 void Float(uint8_t* data, size_t& offset, float value) {
-    std::memcpy(data + offset, &value, sizeof(float));
-    offset += sizeof(float);
+    int32_t valueInt = 0;
+    std::memcpy(&valueInt, &value, sizeof(float));
+
+    Int(data, offset, valueInt);
 }
 
 void Long(uint8_t* data, size_t& offset, int64_t value) {
-    std::memcpy(data + offset, &value, sizeof(int64_t));
-    offset += sizeof(int64_t);
+    write(data, offset, (value >> 56) & 0xFF);
+    write(data, offset, (value >> 48) & 0xFF);
+    write(data, offset, (value >> 40) & 0xFF);
+    write(data, offset, (value >> 32) & 0xFF);
+    write(data, offset, (value >> 24) & 0xFF);
+    write(data, offset, (value >> 16) & 0xFF);
+    write(data, offset, (value >> 8) & 0xFF);
+    write(data, offset, value & 0xFF);
 }
 
 void Double(uint8_t* data, size_t& offset, double value) {
-    std::memcpy(data + offset, &value, sizeof(double));
-    offset += sizeof(double);
+    int64_t valueLong = 0;
+    std::memcpy(&valueLong, &value, sizeof(double));
+
+    Long(data, offset, valueLong);
 }
 
 void String(uint8_t* data, size_t& offset, std::string value, size_t length) {
-    std::memcpy(data + offset, value.data(), std::min(length, value.size()));
-    if (value.size() < length) {
-        std::memset(data + offset + value.size(), 0, length - value.size());
+    for (size_t i = 0; i < length; i++) {
+        Char(data, offset, value[i]);
     }
-    offset += length;
 }
 
 void LenString(uint8_t* data, size_t& offset, std::string value) {
