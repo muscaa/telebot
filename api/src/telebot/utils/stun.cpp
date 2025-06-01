@@ -97,7 +97,7 @@ void ClientListener::readS2CLinkResponse(Client* client, const uint8_t* data, si
 
     if (accept) {
         std::string ip = bin::LenString(data, offset);
-        uint16_t port = bin::Short(data, offset);
+        int port = bin::Int(data, offset);
 
         onLinkAccepted(client, name, ip, port);
     } else {
@@ -264,10 +264,10 @@ void ServerListener::sendS2CLinkResponse(Server* server, const std::string& from
 
         boost::asio::ip::tcp::endpoint endpointTo = server->getConnections()[idTo]->getSocket().remote_endpoint();
         std::string ipTo = endpointTo.address().to_string();
-        uint16_t portTo = endpointTo.port();
+        int portTo = endpointTo.port();
 
         bin::LenString(data, offset, ipTo);
-        bin::Short(data, offset, portTo);
+        bin::Int(data, offset, portTo);
 
         server->send(idFrom, data, offset);
     }
@@ -280,10 +280,10 @@ void ServerListener::sendS2CLinkResponse(Server* server, const std::string& from
 
         boost::asio::ip::tcp::endpoint endpointFrom = server->getConnections()[idFrom]->getSocket().remote_endpoint();
         std::string ipFrom = endpointFrom.address().to_string();
-        uint16_t portFrom = endpointFrom.port();
+        int portFrom = endpointFrom.port();
 
         bin::LenString(data, offset, ipFrom);
-        bin::Short(data, offset, portFrom);
+        bin::Int(data, offset, portFrom);
 
         server->send(idTo, data, offset);
     }

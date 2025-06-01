@@ -42,7 +42,7 @@ struct ClientListener : public tcp::ClientListener {
 
     virtual void onLinkRequest(Client* client, const std::string& from) = 0;
 
-    virtual void onLinkAccepted(Client* client, const std::string& name, const std::string& ip, uint16_t port) = 0;
+    virtual void onLinkAccepted(Client* client, const std::string& name, const std::string& ip, int port) = 0;
 
     virtual void onLinkDeclined(Client* client, const std::string& name, const std::string& message) = 0;
 };
