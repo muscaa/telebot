@@ -17,5 +17,6 @@ extern API boost::signals2::signal<void ()> post_imgui_build;
 extern API boost::signals2::signal<void ()> pre_render;
 extern API boost::signals2::signal<void ()> render;
 extern API boost::signals2::signal<void ()> post_render;
+extern API boost::signals2::signal<void ()> dispose;
 
 } // namespace telebot::events

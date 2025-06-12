@@ -11,5 +11,6 @@ boost::signals2::signal<void ()> post_imgui_build;
 boost::signals2::signal<void ()> pre_render;
 boost::signals2::signal<void ()> render;
 boost::signals2::signal<void ()> post_render;
+boost::signals2::signal<void ()> dispose;
 
 } // namespace telebot::events

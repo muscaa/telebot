@@ -188,6 +188,8 @@ void dispose() {
     running = false;
 
     //telebot::server::video::stop();
+    
+    telebot::events::dispose();
 
     // Cleanup
     // [If using SDL_MAIN_USE_CALLBACKS: all code below would likely be your SDL_AppQuit() function]
