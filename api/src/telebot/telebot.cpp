@@ -36,7 +36,7 @@ bool init() {
 
         void onLinkRequest(stun::Client* client, const std::string& from) {}
 
-        void onLinkAccepted(stun::Client* client, const std::string& name, const std::string& ip, int port) {}
+        void onLinkAccepted(stun::Client* client, const std::string& name, const std::string& myip, int myport, const std::string& ip, int port) {}
 
         void onLinkDeclined(stun::Client* client, const std::string& name, const std::string& message) {}
     };
