@@ -96,10 +96,12 @@ void ClientListener::readS2CLinkResponse(Client* client, const uint8_t* data, si
     bool accept = bin::Bool(data, offset);
 
     if (accept) {
+        std::string myip = bin::LenString(data, offset);
+        int myport = bin::Int(data, offset);
         std::string ip = bin::LenString(data, offset);
         int port = bin::Int(data, offset);
 
-        onLinkAccepted(client, name, ip, port);
+        onLinkAccepted(client, name, myip, myport, ip, port);
     } else {
         std::string declineMessage = bin::LenString(data, offset);
 
@@ -258,14 +260,20 @@ void ServerListener::sendS2CLinkResponse(Server* server, const std::string& from
         return;
     }
 
+    boost::asio::ip::tcp::endpoint endpointTo = server->getConnections()[idTo]->getSocket().remote_endpoint();
+    std::string ipTo = endpointTo.address().to_string();
+    int portTo = endpointTo.port();
+
+    boost::asio::ip::tcp::endpoint endpointFrom = server->getConnections()[idFrom]->getSocket().remote_endpoint();
+    std::string ipFrom = endpointFrom.address().to_string();
+    int portFrom = endpointFrom.port();
+
     {
         bin::LenString(data, offset, to);
         bin::Bool(data, offset, true);
 
-        boost::asio::ip::tcp::endpoint endpointTo = server->getConnections()[idTo]->getSocket().remote_endpoint();
-        std::string ipTo = endpointTo.address().to_string();
-        int portTo = endpointTo.port();
-
+        bin::LenString(data, offset, ipFrom);
+        bin::Int(data, offset, portFrom);
         bin::LenString(data, offset, ipTo);
         bin::Int(data, offset, portTo);
 
@@ -278,10 +286,8 @@ void ServerListener::sendS2CLinkResponse(Server* server, const std::string& from
         bin::LenString(data, offset, from);
         bin::Bool(data, offset, true);
 
-        boost::asio::ip::tcp::endpoint endpointFrom = server->getConnections()[idFrom]->getSocket().remote_endpoint();
-        std::string ipFrom = endpointFrom.address().to_string();
-        int portFrom = endpointFrom.port();
-
+        bin::LenString(data, offset, ipTo);
+        bin::Int(data, offset, portTo);
         bin::LenString(data, offset, ipFrom);
         bin::Int(data, offset, portFrom);
 
